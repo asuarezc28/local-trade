@@ -21,8 +21,6 @@ import config from '@arcgis/core/config.js';
 import { MapSidebarService } from 'src/app/services/map-sidebar/map-sidebar.service';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
-import { DataMapServiceService } from 'src/app/services/data-map-service/data-map-service.service';
-import { SidebarMenuService } from 'src/app/services/sidebar-menu-service/sidebar-menu.service';
 
 
 
@@ -40,11 +38,10 @@ export class MapComponent implements OnInit, OnDestroy {
   public layerByLocation: FeatureLayer;
   public municipalitieLayer;
   public allElements;
-  //public firstLoad: boolean = true;
   private shops;
   public viewEsriMap: boolean = false;
   public ubicationUserLayer;
-  private userUbication: object;
+
 
 
   @ViewChild('mapViewNode', { static: true }) private mapViewEl: ElementRef;
@@ -59,8 +56,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private zone: NgZone,
     private MapSidebarService: MapSidebarService,
     private router: Router,
-    private dataMapServiceService: DataMapServiceService,
-    private SidebarService: SidebarMenuService) {
+  ) {
 
     this.MapSidebarService.formDetailPage$.subscribe(response => {
       this.formDetailPage = response;
@@ -71,9 +67,6 @@ export class MapComponent implements OnInit, OnDestroy {
     )
       .subscribe(event => {
         this.actualURL = event['url'];
-        // if (this.firstLoad) {
-        //   this.firstLoad = false;
-        // }
         if (event['url'] !== '/local-product' && event['url'] !== '/local-product/detail') {
           localStorage.removeItem('filterFormLocal');
         }
@@ -164,13 +157,9 @@ export class MapComponent implements OnInit, OnDestroy {
       local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/categories_shops/FeatureServer/0'
     };
 
-    //DELETE OBSERVABLE
-    // this.SidebarService.sidebarView$.subscribe(data => {
-    //   this.changeLayer(data);
-    // });
 
     config.assetsPath = 'assets/';
-    const layer = 'local';  //local layer by default but we need change this and do dinamically
+    const layer = 'local';
 
     this.zone.runOutsideAngular(() => {
 
@@ -207,8 +196,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
 
   filterLocalProductByCategorieOrTerm() {
-    //LOCAL PRODUCT LAYER FILTER BY CATEGORIE
-    debugger;
     this.MapSidebarService.filtersToMapChanges$.subscribe(data => {
       this.view.graphics.removeAll();
       const layerUrl = this.myMap.layers.items[0].url;
@@ -216,7 +203,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.graphicLayer.graphics.removeAll();
         this.view.zoom = 10;
         this.view.center = [-17.93, 28.66];
-        //definitionExpression
         if (data[0] === 'All') {
           this.actualLayer.definitionExpression = "1=1";
         } else {
@@ -273,13 +259,8 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   orderByLocation(): void {
-    // https://www.npmjs.com/package/@arcgis/webpack-plugin
-
-    //webpack-plugin
-
     this.MapSidebarService.orderByLocationChanges$.subscribe(async data => {
       const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
-
       if (userLatLon) {
         const geometrySrv = geometryService;
         const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
@@ -335,7 +316,6 @@ export class MapComponent implements OnInit, OnDestroy {
           });
           return shop;
         });
-        //TO CONTROL THE PROBLEM WITH ASYNC DATA DISTANCE ************
         setTimeout(() => {
           this.MapSidebarService.sendDataFromMap(newShopping);
         }, 2000);

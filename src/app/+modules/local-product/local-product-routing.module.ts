@@ -8,11 +8,6 @@ const routes: Routes = [
   { path: AppUrls.AppLocalProductListRoot, redirectTo: AppUrls.AppLocalProductList, pathMatch: 'full' },
   { path: AppUrls.AppLocalProductList, component: LocalProductListComponent },
   { path: AppUrls.AppLocalProductDetail, component: LocalProductDetailComponent },
-//   {
-//     path: AppUrls.AppLocalProduct, component: LocalProductListComponent, children: [
-//       { path: AppUrls.AppLocalProductDetail, component: LocalProductDetailComponent },
-//     ]
-//   }
 ]
 
 

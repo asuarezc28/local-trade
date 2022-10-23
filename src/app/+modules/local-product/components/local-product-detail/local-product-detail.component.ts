@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AppUrls } from 'src/app/config/app-urls.config';
@@ -45,32 +45,5 @@ export class LocalProductDetailComponent implements OnInit {
     });
   }
 
-
 }
 
-
-// import {Component, Inject} from '@angular/core';
-// import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
-
-// export interface DialogData {
-//   animal: 'panda' | 'unicorn' | 'lion';
-// }
-
-// /**
-//  * @title Injecting data when opening a dialog
-//  */
-// @Component({
-//   selector: 'dialog-data-example',
-//   templateUrl: 'dialog-data-example.html',
-// })
-// export class DialogDataExample {
-//   constructor(public dialog: MatDialog) {}
-
-//   openDialog() {
-//     this.dialog.open(DialogDataExampleDialog, {
-//       data: {
-//         animal: 'panda'
-//       }
-//     });
-//   }
-// }

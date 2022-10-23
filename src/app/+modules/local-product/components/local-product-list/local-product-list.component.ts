@@ -89,7 +89,7 @@ export class LocalProductListComponent implements OnInit {
     if (!this.formDetailPage) {
       this.localForm.controls['shopping'].setValue('All');
       const shoppingValue = this.localForm.get('shopping').value;
-      const radioButtonsValue = this.localForm.get('radioLocationMuni').value;
+      // const radioButtonsValue = this.localForm.get('radioLocationMuni').value;
       const filterFormLocal = [shoppingValue];
       localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
     }
@@ -121,7 +121,6 @@ export class LocalProductListComponent implements OnInit {
   }
 
   orderShops(dataMap: any): void {
-    debugger;
     this.sortBy = sessionStorage.getItem('sort') ? sessionStorage.getItem('sort') : 'alpha';
     if (this.sortBy === 'location') {
       this.localProductShops = [];
@@ -205,7 +204,6 @@ export class LocalProductListComponent implements OnInit {
       localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
     }
     setTimeout(() => {
-      //THE PROBLEM TO OBTAIN THE DISTANCES ON SEARCH BY TERM!!!!!!!!
       if (this.sortBy === 'location') {
         this.obtainLocation();
       }
@@ -221,9 +219,6 @@ export class LocalProductListComponent implements OnInit {
     this.orderAlphaOption.checked = false;
     this.orderLocationOption.checked = true;
     this.returnFormDetail = false;
-    //this.getCoordinates();
-    // setTimeout(() => {
-    // if (this.coordinatesLocation) {
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
     if (userLatLon) {
       this.isLoading = true;
@@ -234,42 +229,8 @@ export class LocalProductListComponent implements OnInit {
     } else {
       this.mapSidebarService.requestUserLocation(true);
     }
-    // } 
-    // else {
-    //   console.log('There is a problem with the coordinates');
-    // }
-    // }, 2000);
   }
 
-  // getCoordinates(): void {
-  //   const options = {
-  //     enableHighAccuracy: true,
-  //     timeout: 5000,
-  //     maximumAge: 0
-  //   };
-  //   let coordinates;
-  //   function success(pos): void {
-  //     const crd = pos.coords;
-  //     coordinates = {
-  //       latitude: crd.latitude,
-  //       longitude: crd.longitude
-  //     };
-  //   };
-
-  //   function error(err): void {
-  //     console.warn('ERROR(' + err.code + '): ' + err.message);
-  //   };
-  //   navigator.geolocation.getCurrentPosition(success, error, options);
-  //   setTimeout(() => {
-  //     if (coordinates) {
-  //       this.coordinatesLocation = coordinates;
-  //     }
-  //   }, 500);
-  // }
-
-  // orderBy(event): void {
-
-  // }
 
   orderByAlpha(): void {
     this.orderAlphaOption.checked = true;
@@ -283,7 +244,6 @@ export class LocalProductListComponent implements OnInit {
       this.localProductShops = orderDataMap;
       sessionStorage.setItem('sort', 'alpha');
       this.sortBy = sessionStorage.getItem('sort');
-      //firtPage not respond without setTimeout
       this.paginator.firstPage();
     }, 1000);
   }
@@ -310,14 +270,6 @@ export class LocalProductListComponent implements OnInit {
 
 
   openDialog(item): void {
-    // if (this.coordinatesLocation) {
-    //   this.openMapDialog(this.coordinatesLocation, item);
-    // } else {
-    //   this.getCoordinates();
-    //   setTimeout(() => {
-    //     this.openMapDialog(this.coordinatesLocation, item);
-    //   }, 500);
-    // }
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
     if (userLatLon) {
       this.openMapDialog(userLatLon, item);
