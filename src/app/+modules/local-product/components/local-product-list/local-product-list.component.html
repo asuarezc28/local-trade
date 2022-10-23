@@ -14,7 +14,7 @@
                         <mat-option value="Extrahotelera">Extrahotelera</mat-option>
                     </mat-select>
                 </mat-form-field>
-                <mat-form-field *ngIf="isTermSelected" style="width:90%" (input)="onSearchTerm($event.target.value)" class="example-full-width">
+                <mat-form-field *ngIf="isTermSelected" style="width:90%" class="example-full-width">
                     <mat-label>Search by term</mat-label>
                     <textarea formControlName="byTerm" class="searchShops" matInput placeholder=""></textarea>
                 </mat-form-field>

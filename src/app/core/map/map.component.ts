@@ -46,11 +46,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
   @ViewChild('mapViewNode', { static: true }) private mapViewEl: ElementRef;
 
-  title = 'ng-cli';
+  title: string = 'ng-cli';
   graphicLayer;
-  myMap;
-  formDetailPage;
-  actualURL;
+  myMap: Map;
+  formDetailPage: boolean;
+  actualURL: string;
 
   constructor(
     private zone: NgZone,
@@ -195,33 +195,31 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
 
-  filterLocalProductByCategorieOrTerm() : void{
+  filterLocalProductByCategorieOrTerm(): void {
     this.MapSidebarService.filtersToMapChanges$.subscribe(data => {
       this.view.graphics.removeAll();
-      if (data.length > 0) {
+      if (data) {
         this.graphicLayer.graphics.removeAll();
         this.view.zoom = 10;
         this.view.center = [-17.93, 28.66];
-        if (data[0] === 'All') {
+        if (data.categorie === 'All') {
           this.actualLayer.definitionExpression = "1=1";
         } else {
-          this.actualLayer.definitionExpression = "MODALIDAD" + "=" + "'" + data[0] + "'";
+          this.actualLayer.definitionExpression = "MODALIDAD" + "=" + "'" + data.categorie + "'";
         }
-        //query shops
         let query = this.actualLayer.createQuery();
-        if (data[0] === 'All' || (data[2])) {
+        if (data.categorie === 'All' || (data.searchByTerm)) {
           query.where = "1=1"
         }
         else {
-          query.where = "MODALIDAD" + "=" + "'" + data[0] + "'";
+          query.where = "MODALIDAD" + "=" + "'" + data.categorie + "'";
         }
         this.actualLayer.queryFeatures(query)
           .then((response) => {
-            //BY TERM 
-            if (data[2]) {
+            if (data.searchByTerm) {
               this.actualLayer.visible = false;
               const allFeatures = response.features;
-              const filteredShops = allFeatures.filter(item => item.attributes.Categories.includes(data[0]));
+              const filteredShops = allFeatures.filter(item => item.attributes.Categories.includes(data.term));
               const fields = response.fields;
               this.layerByLocation = new FeatureLayer({
                 fields,

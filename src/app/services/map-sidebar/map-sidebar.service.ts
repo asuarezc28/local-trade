@@ -1,12 +1,12 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { Search } from 'src/app/+modules/local-product/models/search';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapSidebarService {
 
-  // filtersToMapChange$ = new EventEmitter<String[]>();
   changeLayerMap$ = new EventEmitter<string>();
 
   idItemToMap$ = new EventEmitter<number>();
@@ -17,7 +17,7 @@ export class MapSidebarService {
   private changeLayerOnMap = new BehaviorSubject<string>('local');
   changeLayerOnMap$ = this.changeLayerOnMap.asObservable();
 
-  private filtersToMapChanges = new BehaviorSubject<string[]>([]);
+  private filtersToMapChanges = new BehaviorSubject<Search>(null);
   filtersToMapChanges$ = this.filtersToMapChanges.asObservable();
 
   private orderByLocation = new Subject();

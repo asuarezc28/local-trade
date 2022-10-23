@@ -11,6 +11,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { PaginatorInfoToSearchService } from 'src/app/services/paginator-info-to-search/paginator-info-to-search.service';
 import { MatDialog } from '@angular/material/dialog';
 import { GoogleMapDialogComponent } from 'src/app/core/modals/google-map-dialog/google-map-dialog.component';
+import { Search } from '../../models/search';
 
 
 
@@ -182,23 +183,20 @@ export class LocalProductListComponent implements OnInit {
     }
   }
 
-  onSearchTerm(event): void {
-
-  }
-
 
   onSubmit(): void {
+    let dataFilter: Search;
     const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
     if (userLatLon || this.sortBy === 'alpha') {
       this.isLoading = true;
     }
     if (this.isTermSelected) {
       const byTermValue = this.localForm.get('byTerm').value;
-      const dataFilter = [this.removeAccents(byTermValue), this.pageNumber, true];
+      dataFilter = new Search(true, this.pageNumber, null, this.removeAccents(byTermValue));
       this.mapSidebarService.filtersToMap(dataFilter);
     } else {
       const shoppingValue = this.localForm.get('shopping').value;
-      const dataFilter = [shoppingValue, this.pageNumber, false];
+      dataFilter = new Search(false, this.pageNumber, shoppingValue);
       this.mapSidebarService.filtersToMap(dataFilter);
       const filterFormLocal = [shoppingValue];
       localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
