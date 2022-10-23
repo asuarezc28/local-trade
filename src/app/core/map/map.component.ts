@@ -195,10 +195,9 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
 
-  filterLocalProductByCategorieOrTerm() {
+  filterLocalProductByCategorieOrTerm() : void{
     this.MapSidebarService.filtersToMapChanges$.subscribe(data => {
       this.view.graphics.removeAll();
-      const layerUrl = this.myMap.layers.items[0].url;
       if (data.length > 0) {
         this.graphicLayer.graphics.removeAll();
         this.view.zoom = 10;
@@ -329,7 +328,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
   zoomToFeature(): void {
     this.MapSidebarService.idItemToMap$.subscribe(data => {
-      const layerUrl = this.myMap.layers.items[0].url;
       const query = this.actualLayer.createQuery();
       query.where = "id = '" + data + "'";
       this.actualLayer.queryFeatures(query)

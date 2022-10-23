@@ -11,7 +11,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { PaginatorInfoToSearchService } from 'src/app/services/paginator-info-to-search/paginator-info-to-search.service';
 import { MatDialog } from '@angular/material/dialog';
 import { GoogleMapDialogComponent } from 'src/app/core/modals/google-map-dialog/google-map-dialog.component';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+
 
 
 @Component({
