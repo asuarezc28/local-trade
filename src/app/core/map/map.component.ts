@@ -35,7 +35,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private view: any = null;
   public actualLayer;
-  public layerByLocation: FeatureLayer;
+  public layerSearchByTerm: FeatureLayer;
   public municipalitieLayer;
   public allElements;
   private shops;
@@ -221,7 +221,7 @@ export class MapComponent implements OnInit, OnDestroy {
               const allFeatures = response.features;
               const filteredShops = allFeatures.filter(item => item.attributes.Categories.includes(data.term));
               const fields = response.fields;
-              this.layerByLocation = new FeatureLayer({
+              this.layerSearchByTerm = new FeatureLayer({
                 fields,
                 objectIdField: "ObjectID",
                 geometryType: "point",
@@ -231,15 +231,15 @@ export class MapComponent implements OnInit, OnDestroy {
                 //renderer: uvRenderer 
               });
               this.myMap.removeAll();
-              this.myMap.add(this.layerByLocation);
-              this.layerByLocation.visible = true;
+              this.myMap.add(this.layerSearchByTerm);
+              this.layerSearchByTerm.visible = true;
               this.shops = filteredShops;
               setTimeout(() => {
                 this.MapSidebarService.sendDataFromMap(filteredShops);
               }, 2000);
             } else {
-              if (this.layerByLocation) {
-                this.layerByLocation.visible = false;
+              if (this.layerSearchByTerm) {
+                this.layerSearchByTerm.visible = false;
               }
               this.myMap.add(this.actualLayer);
               this.actualLayer.visible = true;
