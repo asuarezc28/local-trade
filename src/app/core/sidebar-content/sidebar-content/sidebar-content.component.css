@@ -1,0 +1,75 @@
+.sidebar-content-off {
+  position: absolute;
+  height: 100%;
+  background: white;
+  right: -20%;
+  display: none;
+  top: 0;
+}
+
+.sidebar-content {
+  position: absolute;
+  height: 100%;
+  width: 21%;
+  background-color: white;
+  z-index: 0;
+  right: 0%;
+  top: 0;
+}
+
+.sidebar-content-off-xs {
+  position: absolute;
+  height: 100%;
+  background: white;
+  right: -80%;
+  display: none;
+  top: 0;
+}
+
+.sidebar-content-xs {
+  position: absolute;
+  height: 100%;
+  width: 80%;
+  background-color: white;
+  z-index: 0;
+  right: 0%;
+  top: 0;
+}
+
+.sidebar-content-off-sm {
+  position: absolute;
+  height: 100%;
+  background: white;
+  right: -40%;
+  display: none;
+  top: 0;
+}
+
+.sidebar-content-sm {
+  position: absolute;
+  height: 100%;
+  width: 40%;
+  background-color: white;
+  z-index: 0;
+  right: 0%;
+  top: 0;
+}
+
+.sidebar-content-off-md {
+  position: absolute;
+  height: 100%;
+  background: white;
+  right: -30%;
+  display: none;
+  top: 0;
+}
+
+.sidebar-content-md {
+  position: absolute;
+  height: 100%;
+  width: 30%;
+  background-color: white;
+  z-index: 0;
+  right: 0%;
+  top: 0;
+}

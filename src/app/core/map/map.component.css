@@ -1,0 +1,6 @@
+.esri-view {
+    height: calc(100% - 64px);
+    width: 100%;
+    position: absolute;
+    outline: none;
+  }

@@ -1,0 +1,86 @@
+<section class="local-product-panel">
+    <main>
+        <section>
+            <form [formGroup]="localForm">
+                <mat-radio-group class="radioGroupFilter" aria-label="Select an option" (change)="byCatOrTerm($event)">
+                    <mat-radio-button class="byCategorie" value="category">By Categorie</mat-radio-button>
+                    <mat-radio-button [checked]=true value="term">By Term</mat-radio-button>
+                </mat-radio-group>
+                <mat-form-field *ngIf="!isTermSelected" class="selectorFilterTypeOfShop" appearance="fill">
+                    <mat-label>Choose a type of shop</mat-label>
+                    <mat-select [disabled]="" formControlName="shopping">
+                        <mat-option value="All">All</mat-option>
+                        <mat-option value="Hotelera">Hotelera</mat-option>
+                        <mat-option value="Extrahotelera">Extrahotelera</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field *ngIf="isTermSelected" style="width:90%" (input)="onSearchTerm($event.target.value)" class="example-full-width">
+                    <mat-label>Search by term</mat-label>
+                    <textarea formControlName="byTerm" class="searchShops" matInput placeholder=""></textarea>
+                </mat-form-field>
+                <button mat-flat-button (click)="onSubmit()">Consult</button>
+                <mat-form-field style="width:90%" (input)="onSearchChange($event.target.value)" class="example-full-width">
+                    <mat-label>Filter</mat-label>
+                    <textarea class="searchShops" matInput placeholder=""></textarea>
+                </mat-form-field>
+            </form>
+            <div class="listItems">
+                <div class="paginator-container">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                        <mat-icon>sort</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item style="height: fit-content;" (click)="orderByAlpha()">
+                            <mat-radio-group class="grid">
+                                <mat-radio-button [checked]="orderAlphaOption.checked"
+                                    value="{{orderAlphaOption.value}}">
+                                    {{orderAlphaOption.label}}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </button>
+                        <button mat-menu-item style="height: fit-content;" (click)="obtainLocation()">
+                            <mat-radio-group class="grid">
+                                <mat-radio-button [checked]="orderLocationOption.checked"
+                                    value="{{orderLocationOption.value}}">
+                                    {{orderLocationOption.label}}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </button>
+                    </mat-menu>
+                    <mat-paginator [disabled]="canChangePage" #paginator [length]="localProductShops.length" [pageSize]="pageSize" (page)="handlePage($event)" (click)="pageChange()" [pageSizeOptions]="pageSizeOptions" aria-label="Select page">
+                    </mat-paginator>
+                </div>
+                <div *ngIf="isLoading" class="spinnerBox">
+                    <mat-spinner></mat-spinner>
+                </div>
+                <div *ngIf="!isLoading">
+                    <section *ngFor="let item of localProductShops | paginate:pageSize:pageNumber">
+                        <mat-accordion>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <!-- class="card-tittle" -->
+                                    <mat-panel-title class="card-tittle">
+                                        <p>{{item.NOMBRE}}</p>
+                                        <p *ngIf="sortBy === 'location'">{{item.distance}} km</p>
+                                    </mat-panel-title>
+                                    <!-- <mat-panel-description class="description-panel">
+                                    <p *ngIf="item.distance">{{item.distance}} km</p>
+                                </mat-panel-description> -->
+                                </mat-expansion-panel-header>
+                                <p> Municipalitie: {{item.MUNICIPIO}}</p>
+                                <p> Places: {{item.PLAZAS}}</p>
+                                <p> Phone: {{item.TELEFONO}}</p>
+                                <div class="detailAndZoomButtons">
+                                    <button title="Zoom to Shop" mat-raised-button class="zoomButton" (click)="zoomToMap(item.ID)"> </button>
+                                    <button title="Detail" mat-raised-button class="detailButton" (click)="goToDetail(item)">
+                                    </button>
+                                    <button title="Route" mat-raised-button class="googleMapButton" (click)="openDialog(item)"></button>
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+</section>

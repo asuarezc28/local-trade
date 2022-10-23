@@ -1,0 +1,17 @@
+<div [ngClass]="{
+  'sidebar-menu-off': !show,
+  'sidebar-menu': show
+}" [ngClass.xs]="{
+  'sidebar-menu-off-xs': !show,
+  'sidebar-menu-xs': show
+}" [ngClass.sm]="{
+  'sidebar-menu-off-sm': !show,
+  'sidebar-menu-sm': show
+}" [ngClass.md]="{
+  'sidebar-menu-off-md': !show,
+  'sidebar-menu-md': show
+}">
+
+  <button class="button-local " mat-raised-button (click)="goToLocal()" routerLinkActive="active-route"></button>
+    
+</div>

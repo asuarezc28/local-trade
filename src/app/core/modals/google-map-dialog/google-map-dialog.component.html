@@ -1,0 +1,17 @@
+<!-- <mat-dialog-content>
+  
+</mat-dialog-content> -->
+<google-map class="googleMap" [options]="mapOptions">
+    <map-marker *ngFor="let marker of markers" [position]="marker.position"></map-marker>
+    <div id="indicators"></div>
+</google-map>
+<!-- version movil -->
+<!-- <div id="indicators"></div> -->
+<mat-radio-group class="tavelModeSwitch" aria-label="Select an option" (change)="travelModeChange($event)">
+    <mat-radio-button class="drivingOption" [checked]='true' value="DRIVING">Driving</mat-radio-button>
+    <mat-radio-button class="bicyclingOption" value="BICYCLING">Bicycling</mat-radio-button>
+    <mat-radio-button value="WALKING">Walking</mat-radio-button>
+</mat-radio-group>
+<mat-dialog-actions align="center">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

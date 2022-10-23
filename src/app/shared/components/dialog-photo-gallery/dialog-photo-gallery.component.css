@@ -1,0 +1,15 @@
+/* .mainContent{
+    width: 800px; 
+} */
+
+
+
+/* is importat the max-height to 13" displays */
+.mat-dialog-content {
+    display: block;
+    margin: 0 -24px;
+    padding: 0 24px;
+    max-height: 85vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}

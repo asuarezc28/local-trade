@@ -1,0 +1,16 @@
+<div [ngClass]="{
+    'sidebar-content-off': !show,
+    'sidebar-content': show
+  }" [ngClass.xs]="{
+    'sidebar-content-off-xs': !show,
+    'sidebar-content-xs': show
+  }" [ngClass.sm]="{
+    'sidebar-content-off-sm': !show,
+    'sidebar-content-sm': show
+  }"
+  [ngClass.md]="{
+    'sidebar-content-off-md': !show,
+    'sidebar-content-md': show
+  }">
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,186 @@
+  .local-product-panel {
+      position: absolute;
+      right: 0%;
+      width: 95%;
+      height: 100%;
+      background: white;
+      top: 0;
+      z-index: 1;
+  }
+
+  .checkbox-allergens {
+      margin-right: 10px;
+  }
+
+  .listItems {
+      overflow-y: scroll;
+      height: 650px;
+  }
+
+  .selectorFilterMuni {
+      width: 80%;
+      margin-top: 5%;
+  }
+
+  .selectorFilterTypeOfShop {
+      width: 80%;
+      margin-top: 5%;
+  }
+
+  form {
+      height: 30%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+  }
+
+  /* button {
+      background-color: #B6D93B;
+      color: white;
+  } */
+
+  ::ng-deep .mat-paginator-page-size ng-star-inserted {
+      display: none !important;
+  }
+
+  ::ng-deep .mat-paginator-page-size-label {
+      display: none !important;
+  }
+
+  .searchByLocation {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .selectDistanceText {
+      margin: 0 0 0px;
+      margin-top: 10px;
+  }
+
+  .radioButtonLocation {
+      margin-left: 10px;
+  }
+
+  .detailAndZoomButtons {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+  }
+
+  .zoomButton {
+      color: white;
+      background: url(https://i.ibb.co/VwkZBkF/loupe.png) no-repeat;
+      background-color: white;
+      background-size: 20px;
+      background-position: center;
+      text-align: center;
+      height: 30px;
+      width: 0px !important;
+      min-width: unset !important;
+  }
+
+  .detailButton {
+      color: white;
+      background: url(https://i.ibb.co/8cYy8yV/list-1.png) no-repeat;
+      background-color: white;
+      background-size: 20px;
+      background-position: center;
+      text-align: center;
+      height: 30px;
+      margin-left: 10px;
+      width: 0px !important;
+      min-width: unset !important;
+  }
+
+  .googleMapButton {
+      color: white;
+      background: url(https://i.ibb.co/q9vHMM5/ruta-1.png) no-repeat;
+      background-color: white;
+      background-size: 20px;
+      background-position: center;
+      text-align: center;
+      height: 30px;
+      margin-left: 10px;
+      width: 0px !important;
+      min-width: unset !important;
+  }
+
+  ::ng-deep .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+      border-color: #B6D93B;
+  }
+
+  ::ng-deep .mat-radio-button.mat-accent .mat-radio-inner-circle {
+      color: #B6D93B;
+      background-color: #B6D93B;
+  }
+
+  ::ng-deep .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+      background-color: #B6D93B;
+  }
+
+  ::ng-deep .mat-accent .mat-slider-track-fill {
+      color: #B6D93B;
+      background-color: #B6D93B !important;
+  }
+
+  ::ng-deep .mat-slider-thumb-label {
+      color: #B6D93B;
+      background-color: #B6D93B !important;
+  }
+
+  ::ng-deep .mat-slider-thumb {
+      color: #B6D93B;
+      background-color: #B6D93B !important;
+  }
+
+  ::ng-deep .mat-accent .mat-slider-thumb-label {
+      color: #B6D93B;
+      background-color: #B6D93B !important;
+  }
+
+  .card-tittle {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+  }
+
+  .description-panel {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+  }
+
+  .paginator-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+  }
+
+  ::ng-deep .mat-progress-spinner circle, .mat-spinner circle {
+      stroke: #B6D93B;
+  }
+
+  .spinnerBox {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+  }
+
+
+  .byCategorie {
+
+  }
+
+  .byCategorie{
+    margin-right: 20px;
+  }
+
+  .radioGroupFilter{
+    margin-top: 20px;
+  }

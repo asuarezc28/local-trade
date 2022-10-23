@@ -1,0 +1,30 @@
+::ng-deep .map-container{
+    width: 70% !important;
+    height: 100%;
+    margin-top: 10px;
+}
+
+.googleMap{
+    display: flex;
+    flex-direction: row;
+}
+
+#indicators{
+    overflow-y: scroll;
+    max-height: 500px;
+}
+
+.tavelModeSwitch{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.drivingOption{
+    margin-right: 10px;
+}
+
+.bicyclingOption{
+    margin-right: 10px;
+}
