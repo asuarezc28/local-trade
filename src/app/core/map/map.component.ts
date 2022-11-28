@@ -219,23 +219,42 @@ export class MapComponent implements OnInit, OnDestroy {
             if (data.searchByTerm) {
               this.actualLayer.visible = false;
               const allFeatures = response.features;
-              const filteredShops = allFeatures.filter(item => item.attributes.Categories.includes(data.term));
+              console.log('allFeatures', allFeatures);
+
+              // const filteredShops = allFeatures.filter(item => item.attributes.Categories.includes(data.term));
+              //A
+              const filteredShops_ = allFeatures.map((item) => {
+                item.attributes.Categories = item.attributes.Categories.split(', ');
+                return item;
+              });
+              //B
+              const filteredShops__ = filteredShops_.map(item => {
+                console.log('data.term', data.term);
+                const test = item.attributes.Categories.filter(ele => ele === data.term);
+                item.attributes.Categories = test;
+                return item;
+              });
+              //C
+              const test__ = filteredShops__.filter(ele =>
+                ele.attributes.Categories.length === 1);
+                console.log('test__aaaa', test__); 
+
               const fields = response.fields;
               this.layerSearchByTerm = new FeatureLayer({
                 fields,
                 objectIdField: "ObjectID",
                 geometryType: "point",
                 spatialReference: { wkid: 4326 },
-                source: filteredShops,
+                source: test__,
                 //popupTemplate: pTemplate,
                 //renderer: uvRenderer 
               });
               this.myMap.removeAll();
               this.myMap.add(this.layerSearchByTerm);
               this.layerSearchByTerm.visible = true;
-              this.shops = filteredShops;
+              this.shops = test__;
               setTimeout(() => {
-                this.MapSidebarService.sendDataFromMap(filteredShops);
+                this.MapSidebarService.sendDataFromMap(test__);
               }, 2000);
             } else {
               if (this.layerSearchByTerm) {
