@@ -76,7 +76,7 @@ export class MapComponent implements OnInit, OnDestroy {
   initializeMap(layerArrived): Promise<any> {
     const container = this.mapViewEl.nativeElement;
     const LAYERS_MAP = {
-      local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/categories_shops/FeatureServer/0',
+      local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/shops/FeatureServer/0',
     };
 
     const layerToMap = LAYERS_MAP[layerArrived];
@@ -219,25 +219,18 @@ export class MapComponent implements OnInit, OnDestroy {
             if (data.searchByTerm) {
               this.actualLayer.visible = false;
               const allFeatures = response.features;
-              console.log('allFeatures', allFeatures);
-
               // const filteredShops = allFeatures.filter(item => item.attributes.Categories.includes(data.term));
-              //A
-              const filteredShops_ = allFeatures.map((item) => {
+              const filteredShopsSplit = allFeatures.map((item) => {
                 item.attributes.Categories = item.attributes.Categories.split(', ');
                 return item;
               });
-              //B
-              const filteredShops__ = filteredShops_.map(item => {
-                console.log('data.term', data.term);
-                const test = item.attributes.Categories.filter(ele => ele === data.term);
-                item.attributes.Categories = test;
+              const filteredShopsCategorie = filteredShopsSplit.map(item => {
+                const categorieSearched = item.attributes.Categories.filter(ele => ele === data.term);
+                item.attributes.Categories = categorieSearched;
                 return item;
               });
-              //C
-              const test__ = filteredShops__.filter(ele =>
+              const newShops = filteredShopsCategorie.filter(ele =>
                 ele.attributes.Categories.length === 1);
-                console.log('test__aaaa', test__); 
 
               const fields = response.fields;
               this.layerSearchByTerm = new FeatureLayer({
@@ -245,16 +238,16 @@ export class MapComponent implements OnInit, OnDestroy {
                 objectIdField: "ObjectID",
                 geometryType: "point",
                 spatialReference: { wkid: 4326 },
-                source: test__,
+                source: newShops,
                 //popupTemplate: pTemplate,
                 //renderer: uvRenderer 
               });
               this.myMap.removeAll();
               this.myMap.add(this.layerSearchByTerm);
               this.layerSearchByTerm.visible = true;
-              this.shops = test__;
+              this.shops = newShops;
               setTimeout(() => {
-                this.MapSidebarService.sendDataFromMap(test__);
+                this.MapSidebarService.sendDataFromMap(newShops);
               }, 2000);
             } else {
               if (this.layerSearchByTerm) {
