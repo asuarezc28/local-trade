@@ -24,7 +24,8 @@
                     <textarea class="searchShops" matInput placeholder=""></textarea>
                 </mat-form-field>
             </form>
-            <div class="listItems">
+            <div class="listItems" [ngClass.sm]="'listItems-sm'" 
+            [ngClass.xs]="'listItems-xs'" [ngClass.lg]="'listItems-lg'" [ngClass.xs]="'listItems-xs'">
                 <div class="paginator-container">
                     <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                         <mat-icon>sort</mat-icon>

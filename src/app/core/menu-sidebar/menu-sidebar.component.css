@@ -1,19 +1,21 @@
 .sidebar-menu {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 21%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 .sidebar-menu-off {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 0%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 button {
@@ -23,56 +25,62 @@ button {
 
 .sidebar-menu-xs {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 80%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 .sidebar-menu-off-xs {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 0%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 .sidebar-menu-sm {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 40%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 .sidebar-menu-off-sm {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 0%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 .sidebar-menu-md {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 30%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 .sidebar-menu-off-md {
   position: absolute;
-  height: 5%;
+  height: 8%;
   background-color: #F2F2F2;
   z-index: 1;
   right: 0%;
   top: 0;
+  border-bottom-left-radius: 40px;
 }
 
 
@@ -86,9 +94,9 @@ button {
 .button-local {
   width: 100%;
   height: 100%;
-  color: white; 
+  background: url(https://i.ibb.co/0hcfj6h/ajustes-deslizadores.png) no-repeat;
   background-color: #B6D93B;
-  background-size: 50px;
+  background-size: 30px;
   background-position: center;
   text-align: center;
   border-top-left-radius: 1px;
@@ -97,16 +105,7 @@ button {
   border-bottom-left-radius: 40px;
 }
 
-.buttonWalking {
-  width: 100%;
-  height: 100%;
-  color: white; 
-  background: url(https://i.ibb.co/1LpnQ3f/senderismo.png) no-repeat;
-  background-color: #B6D93B;
-  background-size: 50px;
-  background-position: center;
-  text-align: center;
-}
+
 
 
 
