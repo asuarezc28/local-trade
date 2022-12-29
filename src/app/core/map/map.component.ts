@@ -15,6 +15,10 @@ import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 import Point from "@arcgis/core/geometry/Point";
 import Graphic from '@arcgis/core/Graphic';
 import Locate from "@arcgis/core/widgets/Locate";
+import Legend from "@arcgis/core/widgets/Legend";
+import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
+import LayerList from "@arcgis/core/widgets/LayerList";
+import Expand from "@arcgis/core/widgets/Expand";
 import * as geometryService from "@arcgis/core/rest/geometryService";
 import DistanceParameters from "@arcgis/core/rest/support/DistanceParameters";
 import config from '@arcgis/core/config.js';
@@ -110,7 +114,7 @@ export class MapComponent implements OnInit, OnDestroy {
       center: [-17.93, 28.66]
     });
 
-    let locateWidget = new Locate({
+    const locateWidget: Locate = new Locate({
       view: view,   // Attaches the Locate button to the view
       useHeadingEnabled: false,
       goToLocationEnabled: false,
@@ -121,6 +125,43 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     view.ui.add(locateWidget, "top-left");
+
+    const layerList: LayerList = new LayerList({
+      container: document.createElement("div"),
+      view: view
+    });
+    const layerListExpand = new Expand({
+      expandIconClass: "esri-icon-layer-list",  // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+      expandTooltip: "Expand LayerList",
+      view: view,
+      content: layerList
+    });
+    view.ui.add(layerListExpand, "top-left");
+
+
+    const legend: Legend = new Legend({
+      container: document.createElement("div"),
+      view: view
+    });
+    const legendExpand: Expand = new Expand({
+      expandIconClass: "esri-icon-legend",
+      expandTooltip: "Expand Legend",
+      view: view,
+      content: legend
+    });
+    view.ui.add(legendExpand, "top-left");
+
+    const basemapGallery: BasemapGallery = new BasemapGallery({
+      container: document.createElement("div"),
+      view: view
+    });
+    const basemapGalleryExpand: Expand = new Expand({
+      expandIconClass: "esri-icon-basemap",
+      expandTooltip: "Expand Base Map Gallery",
+      view: view,
+      content: basemapGallery
+    });
+    view.ui.add(basemapGalleryExpand, "top-left");
 
     // locateWidget.on("locate", function (locateEvent) {
     //   console.log('no button');
