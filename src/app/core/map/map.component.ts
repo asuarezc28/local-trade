@@ -25,7 +25,7 @@ import config from '@arcgis/core/config.js';
 import { MapSidebarService } from 'src/app/services/map-sidebar/map-sidebar.service';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
-
+import * as Globals from '../../../app/shared/global';
 
 
 @Component({
@@ -48,9 +48,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
 
 
-  @ViewChild('mapViewNode', { static: true }) private mapViewEl: ElementRef;
-
-  title: string = 'ng-cli';
+  @ViewChild(Globals.MAPVIEWNODE, { static: true }) private mapViewEl: ElementRef;
   graphicLayer;
   myMap: Map;
   formDetailPage: boolean;
@@ -70,9 +68,9 @@ export class MapComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     )
       .subscribe(event => {
-        this.actualURL = event['url'];
-        if (event['url'] !== '/local-product' && event['url'] !== '/local-product/detail') {
-          localStorage.removeItem('filterFormLocal');
+        this.actualURL = event[Globals.URL];
+        if (event[Globals.URL] !== Globals.LOCALPRODUCTURL && event[Globals.URL] !== '/local-product/detail') {
+          localStorage.removeItem(Globals.FILTERFORMLOCAL);
         }
       });
   }
@@ -80,11 +78,11 @@ export class MapComponent implements OnInit, OnDestroy {
   initializeMap(layerArrived): Promise<any> {
     const container = this.mapViewEl.nativeElement;
     const LAYERS_MAP = {
-      local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/shops/FeatureServer/0',
+      local: Globals.SHOPLAYER,
     };
 
     const layerToMap = LAYERS_MAP[layerArrived];
-    const municipalitieLayerUrl = 'https://services.arcgis.com/hkQNLKNeDVYBjvFE/ArcGIS/rest/services/Municipios/FeatureServer/0';
+    const municipalitieLayerUrl = Globals.MUNICIPIESLAYER;
     this.municipalitieLayer = new FeatureLayer({
       url: municipalitieLayerUrl,
       visible: false
@@ -95,7 +93,7 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     this.myMap = new Map({
-      basemap: "streets-vector",
+      basemap: Globals.BASEMAPSTREETSVECTOR,
       layers: [this.actualLayer]
     });
 
@@ -124,55 +122,55 @@ export class MapComponent implements OnInit, OnDestroy {
       })
     });
 
-    view.ui.add(locateWidget, "top-left");
+    view.ui.add(locateWidget, Globals.TOPLEFT);
 
     const layerList: LayerList = new LayerList({
-      container: document.createElement("div"),
+      container: document.createElement(Globals.DIV),
       view: view
     });
     const layerListExpand = new Expand({
-      expandIconClass: "esri-icon-layer-list",  // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
+      expandIconClass: Globals.ICONLAYERLIST,  // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
       expandTooltip: "Expand LayerList",
       view: view,
       content: layerList
     });
-    view.ui.add(layerListExpand, "top-left");
+    view.ui.add(layerListExpand, Globals.TOPLEFT);
 
 
     const legend: Legend = new Legend({
-      container: document.createElement("div"),
+      container: document.createElement(Globals.DIV),
       view: view
     });
     const legendExpand: Expand = new Expand({
-      expandIconClass: "esri-icon-legend",
+      expandIconClass: Globals.ICONLEGEND,
       expandTooltip: "Expand Legend",
       view: view,
       content: legend
     });
-    view.ui.add(legendExpand, "top-left");
+    view.ui.add(legendExpand, Globals.TOPLEFT);
 
     const basemapGallery: BasemapGallery = new BasemapGallery({
-      container: document.createElement("div"),
+      container: document.createElement(Globals.DIV),
       view: view
     });
     const basemapGalleryExpand: Expand = new Expand({
-      expandIconClass: "esri-icon-basemap",
+      expandIconClass: Globals.ICONBASEMAP,
       expandTooltip: "Expand Base Map Gallery",
       view: view,
       content: basemapGallery
     });
-    view.ui.add(basemapGalleryExpand, "top-left");
+    view.ui.add(basemapGalleryExpand, Globals.TOPLEFT);
 
     // locateWidget.on("locate", function (locateEvent) {
     //   console.log('no button');
     //   const userUbication = { latitude: locateEvent.position.coords.latitude, longitude: locateEvent.position.coords.longitude };
-    //   sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+    //   sessionStorage.setItem(Globals.USERUBICATION, JSON.stringify(userUbication));
     // });
 
     view.when(function () {
       locateWidget.locate().then(function (pos) {
         const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+        sessionStorage.setItem(Globals.USERUBICATION, JSON.stringify(userUbication));
       });
     });
 
@@ -180,7 +178,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.MapSidebarService.requiredUserLocation$.subscribe(data => {
       locateWidget.locate().then(function (pos) {
         const userUbication = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        sessionStorage.setItem('userUbication', JSON.stringify(userUbication));
+        sessionStorage.setItem(Globals.USERUBICATION, JSON.stringify(userUbication));
         sessionStorage.setItem('sort', 'location');
       });
       setTimeout(() => {
@@ -310,10 +308,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
   orderByLocation(): void {
     this.MapSidebarService.orderByLocationChanges$.subscribe(async data => {
-      const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+      const userLatLon = JSON.parse(sessionStorage.getItem(Globals.USERUBICATION));
       if (userLatLon) {
         const geometrySrv = geometryService;
-        const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
+        const url = Globals.GEOMETRYSERVERURL;
 
         const newShopping = this.shops.map(shop => {
           const myPromise = new Promise((resolve, reject) => {
@@ -338,7 +336,7 @@ export class MapComponent implements OnInit, OnDestroy {
               const fields = [];
               this.ubicationUserLayer = new FeatureLayer({
                 fields,
-                objectIdField: "ObjectID",
+                objectIdField: Globals.OBJECTID,
                 geometryType: "point",
                 spatialReference: { wkid: 4326 },
                 source: [graphicUbication],
@@ -362,7 +360,7 @@ export class MapComponent implements OnInit, OnDestroy {
             // }, 1000);
           });
           myPromise.then((value: number) => {
-            shop.attributes['distance'] = value.toFixed(2);
+            shop.attributes[Globals.DISTANCE] = value.toFixed(2);
           });
           return shop;
         });
@@ -386,11 +384,11 @@ export class MapComponent implements OnInit, OnDestroy {
           const features = response.features[0];
           const Sym = new SimpleMarkerSymbol({
             // type: "simple-marker",
-            color: "blue",
+            color: Globals.BLUE,
             size: 8,
             outline: {
               width: 0.5,
-              color: "darkblue"
+              color: Globals.DARKBLUE
             }
           });
           features.symbol = Sym;

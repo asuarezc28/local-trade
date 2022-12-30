@@ -12,7 +12,7 @@ import { PaginatorInfoToSearchService } from 'src/app/services/paginator-info-to
 import { MatDialog } from '@angular/material/dialog';
 import { GoogleMapDialogComponent } from 'src/app/core/modals/google-map-dialog/google-map-dialog.component';
 import { Search } from '../../models/search';
-
+import * as Globals from '../../../../shared/global';
 
 
 @Component({
@@ -32,7 +32,7 @@ export class LocalProductListComponent implements OnInit {
   pageSize;
   pageNumber;
   pageSizeOptions = [5, 10, 20];
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild(Globals.PAGINATOR) paginator: MatPaginator;
   ordersData = [];
   pageIndexChangeClick;
   pageNumberChangeClick;
@@ -50,10 +50,10 @@ export class LocalProductListComponent implements OnInit {
   originalData: any;
   isLoading: boolean = false;
   public orderAlphaOption = {
-    label: 'Alpha', value: 'alpha', checked: true
+    label: 'Alpha', value: Globals.ALPHA, checked: true
   };
   public orderLocationOption = {
-    label: 'Location', value: 'location', checked: false
+    label: 'Location', value: Globals.LOCATION, checked: false
   };
 
 
@@ -65,11 +65,11 @@ export class LocalProductListComponent implements OnInit {
     private dialog: MatDialog
   ) {
     this.localForm = new FormGroup({
-      shopping: new FormControl(''),
-      muni: new FormControl(''),
-      radioLocationMuni: new FormControl(''),
-      test: new FormControl(''),
-      byTerm: new FormControl(''),
+      shopping: new FormControl(Globals.EMPY),
+      muni: new FormControl(Globals.EMPY),
+      radioLocationMuni: new FormControl(Globals.EMPY),
+      test: new FormControl(Globals.EMPY),
+      byTerm: new FormControl(Globals.EMPY),
     });
   }
 
@@ -79,26 +79,26 @@ export class LocalProductListComponent implements OnInit {
     });
 
     if (!this.formDetailPage) {
-      localStorage.removeItem('filterFormLocal');
-      localStorage.removeItem('pageChangeClick');
-      localStorage.removeItem('page');
-      sessionStorage.removeItem('sort');
+      localStorage.removeItem(Globals.FILTERFORMLOCAL);
+      localStorage.removeItem(Globals.PAGECHANGECLICK);
+      localStorage.removeItem(Globals.PAGE);
+      sessionStorage.removeItem(Globals.SHORT);
     }
 
     this.getDataShops();
 
     if (!this.formDetailPage) {
-      this.localForm.controls['shopping'].setValue('All');
-      const shoppingValue = this.localForm.get('shopping').value;
+      this.localForm.controls[Globals.SHOPPING].setValue('All');
+      const shoppingValue = this.localForm.get(Globals.SHOPPING).value;
       // const radioButtonsValue = this.localForm.get('radioLocationMuni').value;
       const filterFormLocal = [shoppingValue];
-      localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
+      localStorage.setItem(Globals.FILTERFORMLOCAL, JSON.stringify(filterFormLocal));
     }
 
-    const formFilter = JSON.parse(localStorage.getItem('filterFormLocal'));
+    const formFilter = JSON.parse(localStorage.getItem(Globals.FILTERFORMLOCAL));
 
     if (formFilter && this.formDetailPage) {
-      this.localForm.controls['shopping'].setValue(formFilter[0]);
+      this.localForm.controls[Globals.SHOPPING].setValue(formFilter[0]);
     }
 
     this.mapSidebarService.isLoadingLogo$.subscribe(data => {
@@ -109,7 +109,7 @@ export class LocalProductListComponent implements OnInit {
   getDataShops(): void {
     this.mapSidebarService.dataToLocalProductLayer$.subscribe(async data => {
       this.originalData = data;
-      const localSPage = localStorage.getItem('page');
+      const localSPage = localStorage.getItem(Globals.PAGE);
       if (localSPage && this.formDetailPage) {
         this.pageNumber = Number(localSPage);
       } else {
@@ -122,14 +122,14 @@ export class LocalProductListComponent implements OnInit {
   }
 
   orderShops(dataMap: any): void {
-    this.sortBy = sessionStorage.getItem('sort') ? sessionStorage.getItem('sort') : 'alpha';
-    if (this.sortBy === 'location') {
+    this.sortBy = sessionStorage.getItem(Globals.SHORT) ? sessionStorage.getItem(Globals.SHORT) : Globals.ALPHA;
+    if (this.sortBy === Globals.LOCATION) {
       this.localProductShops = [];
       setTimeout(() => {
         this.sortLocation(dataMap);
         this.isLoading = false;
       }, 2000);
-    } else if (!this.sortBy || this.sortBy === 'alpha') {
+    } else if (!this.sortBy || this.sortBy === Globals.ALPHA) {
       const orderDataMap = dataMap.sort((a, b) => {
         return (a.NOMBRE > b.NOMBRE) ? 1 : -1;
       });
@@ -144,7 +144,7 @@ export class LocalProductListComponent implements OnInit {
     this.pageSize = event.pageSize;
     this.pageNumber = event.pageIndex + 1;
     if (this.changePage) {
-      localStorage.setItem('page', this.pageNumber);
+      localStorage.setItem(Globals.PAGE, this.pageNumber);
     } else {
       this.changePage = true;
     }
@@ -153,14 +153,14 @@ export class LocalProductListComponent implements OnInit {
 
   pageChange(): void {
     const pageChangeClick = [this.paginator.pageIndex, this.pageNumber];
-    localStorage.setItem('pageChangeClick', JSON.stringify(pageChangeClick));
+    localStorage.setItem(Globals.PAGECHANGECLICK, JSON.stringify(pageChangeClick));
   }
 
 
   goToDetail(event): void {
     const shopToEmit = this.localProductShops.filter(shop => shop.NOMBRE === event.NOMBRE);
     this.toDetailService.shopToDetailPage.next(shopToEmit);
-    this.router.navigate([AppUrls.AppLocalProductList, 'detail']);
+    this.router.navigate([AppUrls.AppLocalProductList, Globals.DETAIL]);
   }
 
   zoomToMap(event): void {
@@ -169,9 +169,9 @@ export class LocalProductListComponent implements OnInit {
 
   onSearchChange(filterValue): void {
     this.changePage = false;
-    if (filterValue === '') {
+    if (filterValue === Globals.EMPY) {
       this.localProductShops = this.onSearchShops;
-      const pageChangeClick = JSON.parse(localStorage.getItem('pageChangeClick'));
+      const pageChangeClick = JSON.parse(localStorage.getItem(Globals.PAGECHANGECLICK));
       if (pageChangeClick) {
         this.paginator.pageIndex = pageChangeClick[0];
         this.pageNumber = pageChangeClick[1];
@@ -186,23 +186,23 @@ export class LocalProductListComponent implements OnInit {
 
   onSubmit(): void {
     let dataFilter: Search;
-    const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
-    if (userLatLon || this.sortBy === 'alpha') {
+    const userLatLon = JSON.parse(sessionStorage.getItem(Globals.USERUBICATION));
+    if (userLatLon || this.sortBy === Globals.ALPHA) {
       this.isLoading = true;
     }
     if (this.isTermSelected) {
-      const byTermValue = this.localForm.get('byTerm').value;
+      const byTermValue = this.localForm.get(Globals.BYTERM).value;
       dataFilter = new Search(true, this.pageNumber, null, this.removeAccents(byTermValue));
       this.mapSidebarService.filtersToMap(dataFilter);
     } else {
-      const shoppingValue = this.localForm.get('shopping').value;
+      const shoppingValue = this.localForm.get(Globals.SHOPPING).value;
       dataFilter = new Search(false, this.pageNumber, shoppingValue);
       this.mapSidebarService.filtersToMap(dataFilter);
       const filterFormLocal = [shoppingValue];
-      localStorage.setItem('filterFormLocal', JSON.stringify(filterFormLocal));
+      localStorage.setItem(Globals.FILTERFORMLOCAL, JSON.stringify(filterFormLocal));
     }
     setTimeout(() => {
-      if (this.sortBy === 'location') {
+      if (this.sortBy === Globals.LOCATION) {
         this.obtainLocation();
       }
     }, 2000);
@@ -210,20 +210,20 @@ export class LocalProductListComponent implements OnInit {
   }
 
   removeAccents(byTermValue): string {
-    return byTermValue.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    return byTermValue.normalize(Globals.NFD).replace(/[\u0300-\u036f]/g, Globals.EMPY).toLowerCase();
   }
 
   obtainLocation(): void {
     this.orderAlphaOption.checked = false;
     this.orderLocationOption.checked = true;
     this.returnFormDetail = false;
-    const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+    const userLatLon = JSON.parse(sessionStorage.getItem(Globals.USERUBICATION));
     if (userLatLon) {
       this.isLoading = true;
       this.mapSidebarService.orderDataByLocation(userLatLon);
       this.sortByLocation = true;
-      sessionStorage.setItem('sort', 'location');
-      this.sortBy = sessionStorage.getItem('sort');
+      sessionStorage.setItem(Globals.SHORT, Globals.LOCATION);
+      this.sortBy = sessionStorage.getItem(Globals.SHORT);
     } else {
       this.mapSidebarService.requestUserLocation(true);
     }
@@ -240,8 +240,8 @@ export class LocalProductListComponent implements OnInit {
         return (a.NOMBRE > b.NOMBRE) ? 1 : -1;
       });
       this.localProductShops = orderDataMap;
-      sessionStorage.setItem('sort', 'alpha');
-      this.sortBy = sessionStorage.getItem('sort');
+      sessionStorage.setItem(Globals.SHORT, Globals.ALPHA);
+      this.sortBy = sessionStorage.getItem(Globals.SHORT);
       this.paginator.firstPage();
     }, 1000);
   }
@@ -259,7 +259,7 @@ export class LocalProductListComponent implements OnInit {
   }
 
   byCatOrTerm(event): void {
-    if (event.value === "term") {
+    if (event.value === Globals.TERM) {
       this.isTermSelected = true;
     } else {
       this.isTermSelected = false;
@@ -268,7 +268,7 @@ export class LocalProductListComponent implements OnInit {
 
 
   openDialog(item): void {
-    const userLatLon = JSON.parse(sessionStorage.getItem('userUbication'));
+    const userLatLon = JSON.parse(sessionStorage.getItem(Globals.USERUBICATION));
     if (userLatLon) {
       this.openMapDialog(userLatLon, item);
     } else {
@@ -285,7 +285,7 @@ export class LocalProductListComponent implements OnInit {
     }
     );
     const dialogRef = this.dialog.open(GoogleMapDialogComponent, {
-      width: '60%',
+      width: Globals.WIDTHMODALGOOGLELG,
       data: {
         dataKey: coordinates,
         shop: {
@@ -303,7 +303,7 @@ export class LocalProductListComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    const page = localStorage.getItem('page');
+    const page = localStorage.getItem(Globals.PAGE);
     const updatePage = Number(page);
     if (this.formDetailPage && updatePage) {
       setTimeout(() => {
@@ -318,7 +318,7 @@ export class LocalProductListComponent implements OnInit {
       }, 1000);
     }
     if (this.formDetailPage) {
-      if (this.sortBy === 'alpha') {
+      if (this.sortBy === Globals.ALPHA) {
         this.orderAlphaOption.checked = true;
         this.orderLocationOption.checked = false;
       } else {

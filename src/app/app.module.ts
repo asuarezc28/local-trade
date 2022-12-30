@@ -7,7 +7,7 @@ import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { SidebarMenuService } from './services/sidebar-menu-service/sidebar-menu.service';
-import { HomeComponent } from './+modules/home/components/home/home.component';
+// import { HomeComponent } from './+modules/home/components/home/home.component';
 import { DataMapServiceService } from './services/data-map-service/data-map-service.service';
 import { MapSidebarService } from 'src/app/services/map-sidebar/map-sidebar.service';
 import { GoogleMapsModule } from '@angular/google-maps';
@@ -16,7 +16,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    // HomeComponent,
   ],
   imports: [
     BrowserModule,

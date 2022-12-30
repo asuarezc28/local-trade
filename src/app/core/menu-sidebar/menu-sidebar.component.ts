@@ -5,7 +5,7 @@ import { SidebarMenuService } from '../../services/sidebar-menu-service/sidebar-
 import { Link } from '../models/link.model';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import * as Globals from '../../../app/shared/global';
 import { MapSidebarService } from 'src/app/services/map-sidebar/map-sidebar.service';
 
 @Component({
@@ -29,8 +29,8 @@ export class MenuSidebarComponent implements OnInit {
       filter(event => event instanceof NavigationEnd)
     )
       .subscribe(event => {
-        switch (event['url']) {
-          case '/local-product/detail':
+        switch (event[Globals.URL]) {
+          case Globals.LOCALPRODUCTDETAILURL:
             this.includesDetailLocalP = true;
             break;
           default:
@@ -67,7 +67,7 @@ export class MenuSidebarComponent implements OnInit {
     if (!this.includesDetailLocalP) {
       this.router.navigate([AppUrls.AppLocalProductList]);
     }
-    const layer = 'local';
+    const layer = Globals.LOCAL;
     this.sendInfo(layer);
   }
 

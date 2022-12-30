@@ -9,6 +9,7 @@ import { PaginatePipe } from 'src/app/pipes/paginate.pipe';
 import { HttpClientModule } from '@angular/common/http';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import * as Globals from '../../../app/shared/global';
 // import { VisualsModule } from 'src/app/shared/visuals/visuals.module';
 
 //Because is the "local-product" page  ----> "RouterModule.forChild(["   in imports 
@@ -28,7 +29,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         component: LocalProductListComponent
       },
       {
-        path: 'detail',
+        path: Globals.DETAIL,
         component: LocalProductDetailComponent
       }
     ]),
