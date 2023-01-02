@@ -57,7 +57,7 @@
   }
 
   /* button {
-      background-color: #B6D93B;
+      background-color: #F25244;
       color: white;
   } */
 
@@ -130,36 +130,36 @@
   }
 
   ::ng-deep .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-      border-color: #B6D93B;
+      border-color: #F25244;
   }
 
   ::ng-deep .mat-radio-button.mat-accent .mat-radio-inner-circle {
-      color: #B6D93B;
-      background-color: #B6D93B;
+      color: #F25244;
+      background-color: #F25244;
   }
 
   ::ng-deep .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
-      background-color: #B6D93B;
+      background-color: #F25244;
   }
 
   ::ng-deep .mat-accent .mat-slider-track-fill {
-      color: #B6D93B;
-      background-color: #B6D93B !important;
+      color: #F25244;
+      background-color: #F25244!important;
   }
 
   ::ng-deep .mat-slider-thumb-label {
-      color: #B6D93B;
-      background-color: #B6D93B !important;
+      color: #F25244;
+      background-color: #F25244!important;
   }
 
   ::ng-deep .mat-slider-thumb {
-      color: #B6D93B;
-      background-color: #B6D93B !important;
+      color: #F25244;
+      background-color: #F25244!important;
   }
 
   ::ng-deep .mat-accent .mat-slider-thumb-label {
-      color: #B6D93B;
-      background-color: #B6D93B !important;
+      color: #F25244;
+      background-color: #F25244!important;
   }
 
   .card-tittle {
@@ -182,7 +182,7 @@
 
   ::ng-deep .mat-progress-spinner circle,
   .mat-spinner circle {
-      stroke: #B6D93B;
+      stroke: #F25244;
   }
 
   .spinnerBox {
