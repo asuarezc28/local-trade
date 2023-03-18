@@ -23,12 +23,12 @@ export class LocalProductDetailComponent implements OnInit {
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
-
     this.toDetailService.shopToDetailPage$.subscribe(shop => {
-      this.shopShowed = shop[0];
+      if (shop.length > 0) {
+        this.shopShowed = shop[0];
+        this.mapSidebarService.detailPage(true);
+      } 
     });
-
-    this.mapSidebarService.detailPage(true);
   }
 
   goToBackPage(): void {
@@ -45,5 +45,11 @@ export class LocalProductDetailComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    if (!this.shopShowed) {
+      this.router.navigate([AppUrls.AppLocalProductList]).then(() => {
+        window.location.reload();
+      });
+    }
 }
-
+}

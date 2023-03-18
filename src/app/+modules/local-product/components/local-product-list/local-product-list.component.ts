@@ -13,6 +13,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { GoogleMapDialogComponent } from 'src/app/core/modals/google-map-dialog/google-map-dialog.component';
 import { Search } from '../../models/search';
 import * as Globals from '../../../../shared/global';
+import { SidebarMenuService } from 'src/app/services/sidebar-menu-service/sidebar-menu.service';
+import { HostListener } from '@angular/core';
 
 
 @Component({
@@ -21,7 +23,7 @@ import * as Globals from '../../../../shared/global';
   styleUrls: ['./local-product-list.component.css']
 })
 export class LocalProductListComponent implements OnInit {
-
+  isPhone: boolean;
   show: boolean = false;
   formDetailPage: boolean = false;
   hasDataOnForm: boolean = false;
@@ -49,6 +51,8 @@ export class LocalProductListComponent implements OnInit {
   coordinatesLocation: any;
   originalData: any;
   isLoading: boolean = false;
+
+
   public orderAlphaOption = {
     label: 'Alpha', value: Globals.ALPHA, checked: true
   };
@@ -62,7 +66,8 @@ export class LocalProductListComponent implements OnInit {
     private mapSidebarService: MapSidebarService,
     private toDetailService: ToDetailPageService,
     private paginatorInfoToSearchService: PaginatorInfoToSearchService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private SidebarService: SidebarMenuService
   ) {
     this.localForm = new FormGroup({
       shopping: new FormControl(Globals.EMPY),
@@ -71,6 +76,13 @@ export class LocalProductListComponent implements OnInit {
       test: new FormControl(Globals.EMPY),
       byTerm: new FormControl(Globals.EMPY),
     });
+    this.isPhone = window.innerWidth < 768; 
+  }
+
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.isPhone = window.innerWidth < 768;
   }
 
   ngOnInit(): void {
@@ -165,7 +177,11 @@ export class LocalProductListComponent implements OnInit {
 
   zoomToMap(event): void {
     this.mapSidebarService.idItemToMap$.emit(event);
+      if (this.isPhone) {
+        this.SidebarService.sidebarChange(false);
+      }
   }
+
 
   onSearchChange(filterValue): void {
     this.changePage = false;
@@ -332,5 +348,6 @@ export class LocalProductListComponent implements OnInit {
     this.mapSidebarService.detailPage(false);
   }
 }
+
 
 

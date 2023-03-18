@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, Event, NavigationEnd, NavigationStart, NavigationError } from '@angular/router';
-import { AppUrls } from 'src/app/config/app-urls.config';
+import { Router, Event, NavigationEnd, NavigationStart } from '@angular/router';
 import { SidebarMenuService } from '../../services/sidebar-menu-service/sidebar-menu.service'
 import { Link } from '../models/link.model';
 import { ActivatedRoute } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import * as Globals from '../../../app/shared/global';
 import { MapSidebarService } from 'src/app/services/map-sidebar/map-sidebar.service';
 
@@ -20,38 +19,36 @@ export class MenuSidebarComponent implements OnInit {
   changeRoute: boolean = false;
   includesDetailLocalP: boolean = false;
 
-
-
   constructor(private SidebarService: SidebarMenuService,
-    private router: Router, private activateRoute: ActivatedRoute,
-    private MapSidebarService: MapSidebarService) {
-    router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    )
-      .subscribe(event => {
-        switch (event[Globals.URL]) {
-          case Globals.LOCALPRODUCTDETAILURL:
-            this.includesDetailLocalP = true;
-            break;
-          default:
-            this.includesDetailLocalP = false;
-        }
-      });
+    private router: Router, private activateRoute: ActivatedRoute) {
 
-    this.router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
-        this.changeRoute = true;
-      } else {
-        this.changeRoute = false;
-      }
-      if (event instanceof NavigationStart) {
+    //   router.events.pipe(
+    //   filter(event => event instanceof NavigationEnd)
+    // )
+    //   .subscribe(event => {
+    //     switch (event[Globals.URL]) {
+    //       case Globals.LOCALPRODUCTDETAILURL:
+    //         this.includesDetailLocalP = true;
+    //         break;
+    //       default:
+    //         this.includesDetailLocalP = false;
+    //     }
+    //   });
 
-      };
-    });
+    // this.router.events.subscribe((event: Event) => {
+    //   if (event instanceof NavigationStart) {
+    //     this.changeRoute = true;
+    //   } else {
+    //     this.changeRoute = false;
+    //   }
+    //   if (event instanceof NavigationStart) {
+
+    //   };
+    // });
+
   }
 
   ngOnInit(): void {
-
     this.SidebarService.sidebarView$.subscribe(changeShow => {
       if (!this.show) {
         this.show = true;
@@ -59,27 +56,12 @@ export class MenuSidebarComponent implements OnInit {
         this.show = changeShow;
       }
     });
-
-
   }
 
-  goToLocal() {
-    if (!this.includesDetailLocalP) {
-      this.router.navigate([AppUrls.AppLocalProductList]);
-    }
-    const layer = Globals.LOCAL;
-    this.sendInfo(layer);
+  openCloseSidebar(): void {
+    this.SidebarService.sidebarChange(false);
   }
 
 
-
-  sendInfo(layer) {
-    if (this.changeRoute) {
-      this.SidebarService.sidebarChange(true);
-      this.MapSidebarService.changeLayer(layer);
-    }
-    else {
-      this.SidebarService.sidebarChange(false);
-    }
-  }
 }
+

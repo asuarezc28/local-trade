@@ -280,6 +280,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 source: newShops,
                 //popupTemplate: pTemplate,
                 //renderer: uvRenderer 
+                title: 'TEST'
               });
               this.myMap.removeAll();
               this.myMap.add(this.layerSearchByTerm);
