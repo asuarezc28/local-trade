@@ -75,21 +75,22 @@ export class MapComponent implements OnInit, OnDestroy {
       });
   }
 
-  initializeMap(layerArrived): Promise<any> {
+  initializeMap(): Promise<any> {
     const container = this.mapViewEl.nativeElement;
-    const LAYERS_MAP = {
-      local: Globals.SHOPLAYER,
-    };
+    // const LAYERS_MAP = {
+    //   local: Globals.SHOPLAYER,
+    // };
 
-    const layerToMap = LAYERS_MAP[layerArrived];
-    const municipalitieLayerUrl = Globals.MUNICIPIESLAYER;
-    this.municipalitieLayer = new FeatureLayer({
-      url: municipalitieLayerUrl,
-      visible: false
-    });
+    // const layerToMap = LAYERS_MAP[layerArrived];
+
+    // const municipalitieLayerUrl = Globals.MUNICIPIESLAYER;
+    // this.municipalitieLayer = new FeatureLayer({
+    //   url: municipalitieLayerUrl,
+    //   visible: false
+    // });
 
     this.actualLayer = new FeatureLayer({
-      url: layerToMap
+      url: Globals.SHOPLAYER,
     });
 
     this.myMap = new Map({
@@ -192,17 +193,12 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const LAYERS_MAP = {
-      local: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/categories_shops/FeatureServer/0'
-    };
-
-
     config.assetsPath = 'assets/';
-    const layer = 'local';
+    // const layer = 'local';
 
     this.zone.runOutsideAngular(() => {
 
-      this.initializeMap(layer).then(() => {
+      this.initializeMap().then(() => {
         this.zone.run(() => {
         });
       });
@@ -214,7 +210,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
     this.initDataMap();
     this.filterLocalProductByCategorieOrTerm();
-    // this.filterLocalProductLayerByLocation();
     this.orderByLocation();
     this.zoomToFeature();
   }
@@ -227,7 +222,6 @@ export class MapComponent implements OnInit, OnDestroy {
     localProductLayer.queryFeatures(queryLocal)
       .then((response) => {
         const features = response.features;
-        //const dataMap = features.map((feature) => feature.attributes);
         this.shops = features;
         this.MapSidebarService.sendDataFromMap(features);
       });
