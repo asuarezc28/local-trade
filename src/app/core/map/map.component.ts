@@ -28,7 +28,7 @@ import { filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 import * as Globals from '../../../app/shared/global';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js';
-
+import Draw from '@arcgis/core/views/draw/Draw.js';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -125,37 +125,37 @@ export class MapComponent implements OnInit, OnDestroy {
 
     graphicsLayer.add(pointGraphic);
 
-    // // Crear parámetros de buffer
-    // const bufferParams = new BufferParameters({
-    //   distances: [28], // Distancia del buffer en kilómetros
-    //   unit: 'kilometers',
-    //   geodesic: true,
-    //   bufferSpatialReference: { wkid: 4326 }, // Referencia espacial del buffer
-    //   outSpatialReference: { wkid: 4326 }, // Referencia espacial del resultado
-    // });
+    //
+    const buffer: any = geometryEngine.geodesicBuffer(
+      pointGraphic.geometry,
+      30,
+      'kilometers'
+    );
+    console.log('buffer', buffer);
+    let bufferGraphic = new Graphic({
+      geometry: buffer,
+      symbol: {
+        // type: "simple-fill",
+        color: [227, 139, 79, 0.5],
+        // outline: {
+        //   color: [255, 255, 255, 255],
+        // },
+      },
+    });
+    graphicsLayer.add(bufferGraphic);
+    //
 
-    // // Crear el buffer
-    // const buffer = geometryEngine.geodesicBuffer(centroidePoint, 28);
+    const testPointUserInTazacorte: Point = new Point({
+      latitude: 28.126029,
+      longitude: -15.439098,
+    });
 
-    // // Crear un símbolo para el buffer
-    // const bufferSymbol = {
-    //   type: 'simple-fill',
-    //   color: [0, 0, 255, 0.2],
-    //   outline: {
-    //     color: [0, 0, 255, 0.5],
-    //     width: 2,
-    //   },
-    // };
-
-    // // Crear una entidad de gráficos para el buffer
-    // const bufferGraphic = new Graphic({
-    //   geometry: buffer,
-    //   symbol: bufferSymbol,
-    // });
-
-    // graphicsLayer.add(bufferGraphic);
-
-    //fin angel
+    const intersecting = geometryEngine.intersect(
+      testPointUserInTazacorte,
+      buffer
+    );
+    console.log('inter', intersecting);
+    //https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-geometryEngine.html#intersect
 
     this.myMap.add(graphicsLayer);
 
