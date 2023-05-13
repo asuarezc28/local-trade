@@ -17,7 +17,6 @@ import Graphic from '@arcgis/core/Graphic';
 import Locate from '@arcgis/core/widgets/Locate';
 import Legend from '@arcgis/core/widgets/Legend';
 import BasemapGallery from '@arcgis/core/widgets/BasemapGallery';
-import BufferParameters from '@arcgis/core/tasks/support/BufferParameters';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import Expand from '@arcgis/core/widgets/Expand';
 import * as geometryService from '@arcgis/core/rest/geometryService';
@@ -38,12 +37,12 @@ export class MapComponent implements OnInit, OnDestroy {
   private view: any = null;
   public actualLayer;
   public layerSearchByTerm: FeatureLayer;
-  public municipalitieLayer;
   public allElements;
   private shops;
   public viewEsriMap: boolean = false;
   public ubicationUserLayer;
   public centroidePoint: Point;
+  public featureInsularLimit: any;
 
   @ViewChild(Globals.MAPVIEWNODE, { static: true })
   private mapViewEl: ElementRef;
@@ -99,66 +98,6 @@ export class MapComponent implements OnInit, OnDestroy {
       center: [-17.93, 28.66],
     });
 
-    //angel
-    const graphicsLayer = new GraphicsLayer();
-
-    const centroidePoint = new Point({
-      x: -17.8673,
-      y: 28.7158,
-      spatialReference: view.spatialReference,
-    });
-
-    const markerSymbol = {
-      type: 'simple-marker',
-      size: 20,
-      color: [226, 119, 40],
-      outline: {
-        color: [255, 255, 255],
-        width: 2,
-      },
-    };
-
-    const pointGraphic = new Graphic({
-      geometry: centroidePoint,
-      symbol: markerSymbol,
-    });
-
-    graphicsLayer.add(pointGraphic);
-
-    //
-    const buffer: any = geometryEngine.geodesicBuffer(
-      pointGraphic.geometry,
-      30,
-      'kilometers'
-    );
-    console.log('buffer', buffer);
-    let bufferGraphic = new Graphic({
-      geometry: buffer,
-      symbol: {
-        // type: "simple-fill",
-        color: [227, 139, 79, 0.5],
-        // outline: {
-        //   color: [255, 255, 255, 255],
-        // },
-      },
-    });
-    graphicsLayer.add(bufferGraphic);
-    //
-
-    const testPointUserInTazacorte: Point = new Point({
-      latitude: 28.126029,
-      longitude: -15.439098,
-    });
-
-    const intersecting = geometryEngine.intersect(
-      testPointUserInTazacorte,
-      buffer
-    );
-    console.log('inter', intersecting);
-    //https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-geometryEngine.html#intersect
-
-    this.myMap.add(graphicsLayer);
-
     const locateWidget: Locate = new Locate({
       view: view, // Attaches the Locate button to the view
       useHeadingEnabled: false,
@@ -175,6 +114,7 @@ export class MapComponent implements OnInit, OnDestroy {
       container: document.createElement(Globals.DIV),
       view: view,
     });
+
     const layerListExpand = new Expand({
       expandIconClass: Globals.ICONLAYERLIST, // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
       expandTooltip: 'Expand LayerList',
@@ -362,64 +302,132 @@ export class MapComponent implements OnInit, OnDestroy {
         sessionStorage.getItem(Globals.USERUBICATION)
       );
       if (userLatLon) {
-        const geometrySrv = geometryService;
-        const url = Globals.GEOMETRYSERVERURL;
+        const graphicsLayer = new GraphicsLayer();
 
-        const newShopping = this.shops.map((shop) => {
-          const myPromise = new Promise((resolve, reject) => {
-            // setTimeout(() => {
-            // const testPointUserInTazacorte: Point = new Point({
-            //   latitude: 28.65194343028121,
-            //   longitude: -17.94569064538474
-            // });
-
-            const testPointUserInTazacorte: Point = new Point({
-              latitude: 28.65194343028121,
-              longitude: -17.94569064538474,
-            });
-
-            //const testPointUserInTazacorte: Point = new Point(userLatLon);
-
-            if (!this.ubicationUserLayer) {
-              const graphicUbication = new Graphic({
-                // graphic with line geometry
-                geometry: testPointUserInTazacorte, // set geometry here
-                // symbol: new SimpleLineSymbol({...}) // set symbol here
-              });
-              const fields = [];
-              this.ubicationUserLayer = new FeatureLayer({
-                fields,
-                objectIdField: Globals.OBJECTID,
-                geometryType: 'point',
-                spatialReference: { wkid: 4326 },
-                source: [graphicUbication],
-                //popupTemplate: pTemplate,
-                //renderer: uvRenderer
-              });
-              this.myMap.add(this.ubicationUserLayer);
-            }
-
-            const distParams = new DistanceParameters();
-            //distParams.geometry1 = locationUserPoint;
-            distParams.geometry1 = testPointUserInTazacorte;
-            distParams.distanceUnit = 'kilometers';
-            distParams.geodesic = true;
-            let shopUbication = new Point({
-              latitude: shop.geometry.latitude,
-              longitude: shop.geometry.longitude,
-            });
-            distParams.geometry2 = shopUbication;
-            resolve(geometrySrv.distance(url, distParams));
-            // }, 1000);
-          });
-          myPromise.then((value: number) => {
-            shop.attributes[Globals.DISTANCE] = value.toFixed(2);
-          });
-          return shop;
+        const centroidePoint = new Point({
+          x: -17.8673,
+          y: 28.7158,
         });
-        setTimeout(() => {
-          this.MapSidebarService.sendDataFromMap(newShopping);
-        }, 2000);
+
+        const markerSymbol = {
+          type: 'simple-marker',
+          size: 20,
+          color: [226, 119, 40],
+          outline: {
+            color: [255, 255, 255],
+            width: 2,
+          },
+        };
+
+        const pointGraphic = new Graphic({
+          geometry: centroidePoint,
+          symbol: markerSymbol,
+        });
+
+        graphicsLayer.add(pointGraphic);
+
+        const buffer: any = geometryEngine.geodesicBuffer(
+          pointGraphic.geometry,
+          30,
+          'kilometers'
+        );
+
+        const testPointUserInTazacorteToBuffer: Point = new Point({
+          latitude: 28.659,
+          longitude: -17.9148,
+        });
+
+        const intersecting = geometryEngine.intersect(
+          testPointUserInTazacorteToBuffer,
+          buffer
+        );
+        console.log('inter FUNCIONANDO', intersecting);
+
+        // let bufferGraphic = new Graphic({
+        //   geometry: buffer,
+        //   symbol: {
+        //     // type: "simple-fill",
+        //     color: [227, 139, 79, 0.5],
+        //     // outline: {
+        //     //   color: [255, 255, 255, 255],
+        //     // },
+        //   },
+        // });
+
+        //graphicsLayer.add(bufferGraphic);
+
+        //https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-geometryEngine.html#intersect
+
+        this.myMap.add(graphicsLayer);
+
+        if (intersecting) {
+          console.log('you are in to La Palma');
+          const geometrySrv = geometryService;
+          const url = Globals.GEOMETRYSERVERURL;
+          const newShopping = this.shops.map((shop) => {
+            const myPromise = new Promise((resolve, reject) => {
+              const testPointUserInTazacorte: Point = new Point({
+                latitude: 28.65194343028121,
+                longitude: -17.94569064538474,
+              });
+
+              //const testPointUserInTazacorte: Point = new Point(userLatLon);
+
+              const markerSymbolUserUbication = {
+                type: 'simple-marker',
+                size: 20,
+                color: [226, 119, 40],
+                outline: {
+                  color: [255, 255, 255],
+                  width: 2,
+                },
+              };
+
+              if (!this.ubicationUserLayer) {
+                const graphicUbication = new Graphic({
+                  geometry: testPointUserInTazacorte,
+                  symbol: markerSymbolUserUbication,
+                });
+                //THE BEST OPTION IS CREATE A GRAPHIC TO PRINT THE USER LOCATION
+                const fields = [];
+                this.ubicationUserLayer = new FeatureLayer({
+                  fields,
+                  objectIdField: Globals.OBJECTID,
+                  geometryType: 'point',
+                  spatialReference: this.view.spatialReference, //{ wkid: 4326 },
+                  source: [graphicUbication],
+                  //popupTemplate: pTemplate,
+                  //renderer: uvRenderer
+                });
+
+                //this.myMap.add(this.ubicationUserLayer);
+              }
+
+              const distParams = new DistanceParameters();
+              //distParams.geometry1 = locationUserPoint;
+              distParams.geometry1 = testPointUserInTazacorte;
+              distParams.distanceUnit = 'kilometers';
+              distParams.geodesic = true;
+              let shopUbication = new Point({
+                latitude: shop.geometry.latitude,
+                longitude: shop.geometry.longitude,
+              });
+              distParams.geometry2 = shopUbication;
+              resolve(geometrySrv.distance(url, distParams));
+              // }, 1000);
+            });
+            myPromise.then((value: number) => {
+              shop.attributes[Globals.DISTANCE] = value.toFixed(2);
+            });
+            return shop;
+          });
+          setTimeout(() => {
+            this.MapSidebarService.sendDataFromMap(newShopping);
+          }, 2000);
+        } else {
+          //DELETE LOADING ICON WHEN THIS WORKS
+          alert('YOUR LOCATION IS OUTSIDE OF LA PALMA');
+        }
       } else {
         alert('You need allow the user ubication');
       }
@@ -465,3 +473,30 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+//DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+//const insularLimit = new FeatureLayer({
+//url: 'https://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Limite_insular/FeatureServer/0',
+//spatialReference: view.spatialReference,
+//});
+//const queryLocal = insularLimit.createQuery();
+//insularLimit.queryFeatures(queryLocal).then((response) => {
+//response.features[0].geometry.spatialReference = view.spatialReference;
+//console.log(
+//'GEOMETRY FROM LAYER LIMIT ISLAND',
+//response.features[0].geometry
+//);
+//this.featureInsularLimit = response.features[0].geometry;
+//const tazacortePoint_ = new Point({
+//x: -17.9189,
+//y: 28.6559,
+//spatialReference: view.spatialReference,
+//});
+
+//let intersecting = geometryEngine.intersect(
+//this.featureInsularLimit,
+//tazacortePoint_
+//);
+//console.log('intersecting POINT LOS LLANOS', intersecting);
+//});
+//DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
