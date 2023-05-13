@@ -179,7 +179,7 @@ export class MapComponent implements OnInit, OnDestroy {
         sessionStorage.setItem('sort', 'location');
       });
       setTimeout(() => {
-        this.MapSidebarService.startIsLoadingLogo('');
+        this.MapSidebarService.startIsLoadingLogo(true);
         this.MapSidebarService.orderDataByLocation('');
       }, 1000);
     });
@@ -425,6 +425,7 @@ export class MapComponent implements OnInit, OnDestroy {
             this.MapSidebarService.sendDataFromMap(newShopping);
           }, 2000);
         } else {
+          this.MapSidebarService.startIsLoadingLogo(false);
           //DELETE LOADING ICON WHEN THIS WORKS
           alert('YOUR LOCATION IS OUTSIDE OF LA PALMA');
         }

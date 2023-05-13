@@ -62,7 +62,7 @@
                                     <!-- class="card-tittle" -->
                                     <mat-panel-title class="card-tittle">
                                         <p>{{item.NOMBRE}}</p>
-                                        <p *ngIf="sortBy === 'location'">{{item.distance}} km</p>
+                                        <p *ngIf="sortBy === 'location' && item.distance">{{item.distance}} km</p>
                                     </mat-panel-title>
                                     <!-- <mat-panel-description class="description-panel">
                                     <p *ngIf="item.distance">{{item.distance}} km</p>
