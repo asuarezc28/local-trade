@@ -8,10 +8,11 @@ import { CoreRoutingModule } from './core-routing.module';
 import { SidebarContentComponent } from './sidebar-content/sidebar-content/sidebar-content.component';
 import { GoogleMapDialogComponent } from './modals/google-map-dialog/google-map-dialog.component';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { GenericModalComponent } from './modals/generic-modal/generic-modal.component';
 
 
 @NgModule({
-  declarations: [MapComponent, HeaderComponent, MenuSidebarComponent, SidebarContentComponent, GoogleMapDialogComponent],
+  declarations: [MapComponent, HeaderComponent, MenuSidebarComponent, SidebarContentComponent, GoogleMapDialogComponent, GenericModalComponent],
   imports: [
     SharedModule,
     CommonModule,

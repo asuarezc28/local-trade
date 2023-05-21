@@ -27,7 +27,9 @@ import { filter } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 import * as Globals from '../../../app/shared/global';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js';
-import Draw from '@arcgis/core/views/draw/Draw.js';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import Draw from '@arcgis/core/views/draw/Draw';
+import { GenericModalComponent } from '../modals/generic-modal/generic-modal.component';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -43,6 +45,7 @@ export class MapComponent implements OnInit, OnDestroy {
   public ubicationUserLayer;
   public centroidePoint: Point;
   public featureInsularLimit: any;
+  public draw: any;
 
   @ViewChild(Globals.MAPVIEWNODE, { static: true })
   private mapViewEl: ElementRef;
@@ -54,7 +57,8 @@ export class MapComponent implements OnInit, OnDestroy {
   constructor(
     private zone: NgZone,
     private MapSidebarService: MapSidebarService,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog
   ) {
     this.MapSidebarService.formDetailPage$.subscribe((response) => {
       this.formDetailPage = response;
@@ -109,6 +113,10 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     view.ui.add(locateWidget, Globals.TOPLEFT);
+
+    this.draw = new Draw({
+      view: view,
+    });
 
     const layerList: LayerList = new LayerList({
       container: document.createElement(Globals.DIV),
@@ -360,7 +368,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         this.myMap.add(graphicsLayer);
 
-        if (intersecting) {
+        if (!intersecting) {
           console.log('you are in to La Palma');
           const geometrySrv = geometryService;
           const url = Globals.GEOMETRYSERVERURL;
@@ -428,11 +436,83 @@ export class MapComponent implements OnInit, OnDestroy {
           this.MapSidebarService.startIsLoadingLogo(false);
           //DELETE LOADING ICON WHEN THIS WORKS
           alert('YOUR LOCATION IS OUTSIDE OF LA PALMA');
+          const dialogRef = this.dialog.open(GenericModalComponent, {
+            width: '250px',
+            data: {},
+          });
+          dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+              this.onAceptarModal(result);
+            }
+          });
         }
       } else {
         alert('You need allow the user ubication');
       }
     });
+  }
+
+  onAceptarModal(data: any) {
+    let self = this;
+    console.log(
+      'Se presionó Aceptar en el modal con los siguientes datos:',
+      data
+    );
+    // create a new instance of draw
+    let draw = new Draw({
+      view: this.view,
+    });
+
+    // create an instance of draw polyline action
+    // the polyline vertices will be only added when
+    // the pointer is clicked on the view
+    let action2 = draw.create('point', { mode: 'click' });
+
+    // fires when a vertex is added
+    action2.on('vertex-add', function (evt) {
+      console.log('eeeee', evt.vertices);
+    });
+    var testing;
+    // fires when the drawing is completed
+    action2.on('draw-complete', function (evt) {
+      console.log('eseeeeeeeee', evt.vertices);
+      var point = new Point({
+        x: evt.vertices[0][0],
+        y: evt.vertices[0][1],
+        spatialReference: this.view.spatialReference,
+      });
+      var marker = new Graphic({
+        geometry: point,
+        symbol: new SimpleMarkerSymbol({
+          color: [226, 119, 40],
+          outline: { color: [255, 255, 255], width: 1 },
+          size: '32px',
+        }),
+      });
+      debugger;
+      console.log('MARKER', marker);
+      testing = marker;
+      self.addPoint(point);
+      //this.myMap.add(grapicLayer);
+    });
+
+    console.log('TESTING', testing);
+  }
+
+  addPoint(point) {
+    alert('add');
+    var marker = new Graphic({
+      geometry: point,
+      symbol: new SimpleMarkerSymbol({
+        color: [226, 119, 40],
+        outline: { color: [255, 255, 255], width: 1 },
+        size: '32px',
+      }),
+    });
+    console.log('MARKER', marker);
+    const grapicLayer = new GraphicsLayer();
+    grapicLayer.add(marker);
+    this.myMap.add(grapicLayer);
   }
 
   zoomToFeature(): void {
@@ -479,7 +559,7 @@ export class MapComponent implements OnInit, OnDestroy {
 //const insularLimit = new FeatureLayer({
 //url: 'https://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Limite_insular/FeatureServer/0',
 //spatialReference: view.spatialReference,
-//});
+//});/
 //const queryLocal = insularLimit.createQuery();
 //insularLimit.queryFeatures(queryLocal).then((response) => {
 //response.features[0].geometry.spatialReference = view.spatialReference;
