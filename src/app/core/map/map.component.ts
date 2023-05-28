@@ -12,6 +12,7 @@ import MapView from '@arcgis/core/views/MapView';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
+import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Point from '@arcgis/core/geometry/Point';
 import Graphic from '@arcgis/core/Graphic';
 import Locate from '@arcgis/core/widgets/Locate';
@@ -30,6 +31,8 @@ import * as geometryEngine from '@arcgis/core/geometry/geometryEngine.js';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Draw from '@arcgis/core/views/draw/Draw';
 import { GenericModalComponent } from '../modals/generic-modal/generic-modal.component';
+import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils.js';
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -472,47 +475,138 @@ export class MapComponent implements OnInit, OnDestroy {
     action2.on('vertex-add', function (evt) {
       console.log('eeeee', evt.vertices);
     });
-    var testing;
     // fires when the drawing is completed
     action2.on('draw-complete', function (evt) {
-      console.log('eseeeeeeeee', evt.vertices);
-      var point = new Point({
+      const point = new Point({
         x: evt.vertices[0][0],
         y: evt.vertices[0][1],
+        //spatialReference: this.view.spatialReference,
+      });
+
+      // Para convertir coordenadas de metros a latitud y longitud utilizando la API JS de Esri,
+      // puedes utilizar la función webMercatorUtils.xyToLngLat() que convierte coordenadas en el
+      // sistema de coordenadas proyectado Web Mercator (metros) a coordenadas en el sistema de
+      // coordenadas geográfico (latitud y longitud).
+      const lngLat = webMercatorUtils.xyToLngLat(point.x, point.y);
+
+      console.log('Latitud: ' + lngLat[1] + ', Longitud: ' + lngLat[0]);
+
+      // create a new point with decimal degree coordinates
+      const pointInDecimalDegrees = new Point({
+        x: lngLat[0],
+        y: lngLat[1],
         spatialReference: this.view.spatialReference,
       });
-      var marker = new Graphic({
-        geometry: point,
-        symbol: new SimpleMarkerSymbol({
-          color: [226, 119, 40],
-          outline: { color: [255, 255, 255], width: 1 },
-          size: '32px',
-        }),
-      });
-      debugger;
-      console.log('MARKER', marker);
-      testing = marker;
+
       self.addPoint(point);
       //this.myMap.add(grapicLayer);
     });
-
-    console.log('TESTING', testing);
   }
 
   addPoint(point) {
-    alert('add');
-    var marker = new Graphic({
+    const marker = new Graphic({
       geometry: point,
       symbol: new SimpleMarkerSymbol({
-        color: [226, 119, 40],
-        outline: { color: [255, 255, 255], width: 1 },
-        size: '32px',
+        color: [255, 0, 0],
+        size: '26px',
+        outline: {
+          color: [0, 128, 0],
+          width: 1,
+        },
       }),
     });
-    console.log('MARKER', marker);
     const grapicLayer = new GraphicsLayer();
     grapicLayer.add(marker);
-    this.myMap.add(grapicLayer);
+    //this.myMap.add(grapicLayer);
+
+    const centroidePoint = new Point({
+      x: -17.8673,
+      y: 28.7158,
+    });
+
+    const markerSymbol = {
+      type: 'simple-marker',
+      size: 20,
+      color: [226, 119, 40],
+      outline: {
+        color: [255, 255, 255],
+        width: 2,
+      },
+    };
+
+    const pointGraphic = new Graphic({
+      geometry: centroidePoint,
+      symbol: markerSymbol,
+    });
+
+    const buffer: any = geometryEngine.geodesicBuffer(
+      pointGraphic.geometry,
+      30,
+      'kilometers'
+    );
+
+    const bufferLayer = new GraphicsLayer({
+      graphics: [
+        new Graphic({
+          geometry: buffer,
+          symbol: new SimpleFillSymbol({
+            color: [226, 119, 40, 0.5],
+            outline: { color: [255, 255, 255], width: 1 },
+            style: 'solid',
+          }),
+        }),
+      ],
+    });
+    // bufferLayer.add(marker);
+    // this.myMap.add(bufferLayer);
+
+    console.log('buffer', buffer.spatialReference);
+
+    const testPointUserInTazacorteToBuffer: Point = new Point({
+      latitude: 28.659,
+      longitude: -17.9148,
+    });
+
+    console.log(
+      'testPointUserInTazacorteToBuffer',
+      testPointUserInTazacorteToBuffer.spatialReference
+    );
+
+    // point.spatialReference = this.view.spatialReference;
+    // buffer.spatialReference = this.view.spatialReference;
+    point.spatialReference = testPointUserInTazacorteToBuffer.spatialReference;
+    console.log('Punto TAZA: ', testPointUserInTazacorteToBuffer.toJSON());
+    console.log('Punto CREADO: ', point.toJSON());
+    console.log('Buffer: ', buffer.toJSON());
+    const intersecting = geometryEngine.intersect(point, buffer);
+    console.log('inter FUNCIONANDO 2', intersecting);
+
+    //EL PROBLEMA ES QUE LA CAPA TIENE LAS ENTIDADES EN COORDENADAS X E Y Y LAS QUEREMOS EN LAT LON
+
+    // const insularLimit = new FeatureLayer({
+    //   url: 'https://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Limite_insular/FeatureServer/0',
+    //   spatialReference: point.spatialReference,
+    // });
+    // const queryLocal = insularLimit.createQuery();
+    // insularLimit.queryFeatures(queryLocal).then((response) => {
+    //   response.features[0].geometry.spatialReference = point.spatialReference;
+    //   console.log(
+    //     'GEOMETRY FROM LAYER LIMIT ISLAND',
+    //     response.features[0].geometry
+    //   );
+    //   this.featureInsularLimit = response.features[0].geometry;
+    //   const tazacortePoint_ = new Point({
+    //     x: -17.9189,
+    //     y: 28.6559,
+    //     spatialReference: this.view.spatialReference,
+    //   });
+    //   console.log('CAPA EN JSON', this.featureInsularLimit.toJSON());
+    //   let intersecting = geometryEngine.intersect(
+    //     point,
+    //     this.featureInsularLimit
+    //   );
+    //   console.log('intersecting POINT LOS LLANOS', intersecting);
+    // });
   }
 
   zoomToFeature(): void {
