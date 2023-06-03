@@ -312,142 +312,17 @@ export class MapComponent implements OnInit, OnDestroy {
       const userLatLon = JSON.parse(
         sessionStorage.getItem(Globals.USERUBICATION)
       );
+      console.log('userLatLon', userLatLon);
       if (userLatLon) {
-        const graphicsLayer = new GraphicsLayer();
-
-        const centroidePoint = new Point({
-          x: -17.8673,
-          y: 28.7158,
+        const testPointUserInFuerteventuraToBuffer: Point = new Point({
+          latitude: 28.3587,
+          longitude: -14.0534,
         });
-
-        const markerSymbol = {
-          type: 'simple-marker',
-          size: 20,
-          color: [226, 119, 40],
-          outline: {
-            color: [255, 255, 255],
-            width: 2,
-          },
-        };
-
-        const pointGraphic = new Graphic({
-          geometry: centroidePoint,
-          symbol: markerSymbol,
-        });
-
-        graphicsLayer.add(pointGraphic);
-
-        const buffer: any = geometryEngine.geodesicBuffer(
-          pointGraphic.geometry,
-          30,
-          'kilometers'
-        );
-
-        const testPointUserInTazacorteToBuffer: Point = new Point({
-          latitude: 28.659,
-          longitude: -17.9148,
-        });
-
-        const intersecting = geometryEngine.intersect(
-          testPointUserInTazacorteToBuffer,
-          buffer
-        );
-        console.log('inter FUNCIONANDO', intersecting);
-
-        // let bufferGraphic = new Graphic({
-        //   geometry: buffer,
-        //   symbol: {
-        //     // type: "simple-fill",
-        //     color: [227, 139, 79, 0.5],
-        //     // outline: {
-        //     //   color: [255, 255, 255, 255],
-        //     // },
-        //   },
-        // });
-
-        //graphicsLayer.add(bufferGraphic);
-
-        //https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-geometryEngine.html#intersect
-
-        this.myMap.add(graphicsLayer);
-
-        if (!intersecting) {
-          console.log('you are in to La Palma');
-          const geometrySrv = geometryService;
-          const url = Globals.GEOMETRYSERVERURL;
-          const newShopping = this.shops.map((shop) => {
-            const myPromise = new Promise((resolve, reject) => {
-              const testPointUserInTazacorte: Point = new Point({
-                latitude: 28.65194343028121,
-                longitude: -17.94569064538474,
-              });
-
-              //const testPointUserInTazacorte: Point = new Point(userLatLon);
-
-              const markerSymbolUserUbication = {
-                type: 'simple-marker',
-                size: 20,
-                color: [226, 119, 40],
-                outline: {
-                  color: [255, 255, 255],
-                  width: 2,
-                },
-              };
-
-              if (!this.ubicationUserLayer) {
-                const graphicUbication = new Graphic({
-                  geometry: testPointUserInTazacorte,
-                  symbol: markerSymbolUserUbication,
-                });
-                //THE BEST OPTION IS CREATE A GRAPHIC TO PRINT THE USER LOCATION
-                const fields = [];
-                this.ubicationUserLayer = new FeatureLayer({
-                  fields,
-                  objectIdField: Globals.OBJECTID,
-                  geometryType: 'point',
-                  spatialReference: this.view.spatialReference, //{ wkid: 4326 },
-                  source: [graphicUbication],
-                  //popupTemplate: pTemplate,
-                  //renderer: uvRenderer
-                });
-
-                //this.myMap.add(this.ubicationUserLayer);
-              }
-
-              const distParams = new DistanceParameters();
-              //distParams.geometry1 = locationUserPoint;
-              distParams.geometry1 = testPointUserInTazacorte;
-              distParams.distanceUnit = 'kilometers';
-              distParams.geodesic = true;
-              let shopUbication = new Point({
-                latitude: shop.geometry.latitude,
-                longitude: shop.geometry.longitude,
-              });
-              distParams.geometry2 = shopUbication;
-              resolve(geometrySrv.distance(url, distParams));
-              // }, 1000);
-            });
-            myPromise.then((value: number) => {
-              shop.attributes[Globals.DISTANCE] = value.toFixed(2);
-            });
-            return shop;
-          });
-          setTimeout(() => {
-            this.MapSidebarService.sendDataFromMap(newShopping);
-          }, 2000);
+        if (this.calculateIntersect(testPointUserInFuerteventuraToBuffer)[0]) {
+          this.calculateDistances(testPointUserInFuerteventuraToBuffer);
         } else {
           this.MapSidebarService.startIsLoadingLogo(false);
-          //DELETE LOADING ICON WHEN THIS WORKS
-          alert('YOUR LOCATION IS OUTSIDE OF LA PALMA');
-          const dialogRef = this.dialog.open(GenericModalComponent, {
-            width: '250px',
-            data: {},
-          });
-          dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-              this.onAceptarModal(result);
-            }
-          });
+          this.openModal();
         }
       } else {
         alert('You need allow the user ubication');
@@ -455,70 +330,7 @@ export class MapComponent implements OnInit, OnDestroy {
     });
   }
 
-  onAceptarModal(data: any) {
-    let self = this;
-    console.log(
-      'Se presionó Aceptar en el modal con los siguientes datos:',
-      data
-    );
-    // create a new instance of draw
-    let draw = new Draw({
-      view: this.view,
-    });
-
-    // create an instance of draw polyline action
-    // the polyline vertices will be only added when
-    // the pointer is clicked on the view
-    let action2 = draw.create('point', { mode: 'click' });
-
-    // fires when a vertex is added
-    action2.on('vertex-add', function (evt) {
-      console.log('eeeee', evt.vertices);
-    });
-    // fires when the drawing is completed
-    action2.on('draw-complete', function (evt) {
-      const point = new Point({
-        x: evt.vertices[0][0],
-        y: evt.vertices[0][1],
-        //spatialReference: this.view.spatialReference,
-      });
-
-      // Para convertir coordenadas de metros a latitud y longitud utilizando la API JS de Esri,
-      // puedes utilizar la función webMercatorUtils.xyToLngLat() que convierte coordenadas en el
-      // sistema de coordenadas proyectado Web Mercator (metros) a coordenadas en el sistema de
-      // coordenadas geográfico (latitud y longitud).
-      const lngLat = webMercatorUtils.xyToLngLat(point.x, point.y);
-
-      console.log('Latitud: ' + lngLat[1] + ', Longitud: ' + lngLat[0]);
-
-      // create a new point with decimal degree coordinates
-      const pointInDecimalDegrees = new Point({
-        x: lngLat[0],
-        y: lngLat[1],
-        spatialReference: this.view.spatialReference,
-      });
-
-      self.addPoint(point);
-      //this.myMap.add(grapicLayer);
-    });
-  }
-
-  addPoint(point) {
-    const marker = new Graphic({
-      geometry: point,
-      symbol: new SimpleMarkerSymbol({
-        color: [255, 0, 0],
-        size: '26px',
-        outline: {
-          color: [0, 128, 0],
-          width: 1,
-        },
-      }),
-    });
-    const grapicLayer = new GraphicsLayer();
-    grapicLayer.add(marker);
-    //this.myMap.add(grapicLayer);
-
+  calculateIntersect(point: Point): any {
     const centroidePoint = new Point({
       x: -17.8673,
       y: 28.7158,
@@ -527,7 +339,7 @@ export class MapComponent implements OnInit, OnDestroy {
     const markerSymbol = {
       type: 'simple-marker',
       size: 20,
-      color: [226, 119, 40],
+      color: [34, 139, 34],
       outline: {
         color: [255, 255, 255],
         width: 2,
@@ -539,74 +351,161 @@ export class MapComponent implements OnInit, OnDestroy {
       symbol: markerSymbol,
     });
 
+    //PRINT POINT ON MAP
+    console.log('point', point.toJSON());
+    const marker = new Graphic({
+      geometry: point,
+      symbol: new SimpleMarkerSymbol({
+        color: [255, 0, 0],
+        size: '26px',
+        outline: {
+          color: [0, 128, 0],
+          width: 1,
+        },
+      }),
+    });
+
+    this.graphicLayer.removeAll();
+    this.graphicLayer.add(marker);
+    this.myMap.add(this.graphicLayer);
+
     const buffer: any = geometryEngine.geodesicBuffer(
       pointGraphic.geometry,
       30,
       'kilometers'
     );
-
-    const bufferLayer = new GraphicsLayer({
-      graphics: [
-        new Graphic({
-          geometry: buffer,
-          symbol: new SimpleFillSymbol({
-            color: [226, 119, 40, 0.5],
-            outline: { color: [255, 255, 255], width: 1 },
-            style: 'solid',
-          }),
-        }),
-      ],
-    });
-    // bufferLayer.add(marker);
-    // this.myMap.add(bufferLayer);
-
-    console.log('buffer', buffer.spatialReference);
-
-    const testPointUserInTazacorteToBuffer: Point = new Point({
-      latitude: 28.659,
-      longitude: -17.9148,
-    });
-
-    console.log(
-      'testPointUserInTazacorteToBuffer',
-      testPointUserInTazacorteToBuffer.spatialReference
-    );
-
-    // point.spatialReference = this.view.spatialReference;
-    // buffer.spatialReference = this.view.spatialReference;
-    point.spatialReference = testPointUserInTazacorteToBuffer.spatialReference;
-    console.log('Punto TAZA: ', testPointUserInTazacorteToBuffer.toJSON());
-    console.log('Punto CREADO: ', point.toJSON());
-    console.log('Buffer: ', buffer.toJSON());
     const intersecting = geometryEngine.intersect(point, buffer);
-    console.log('inter FUNCIONANDO 2', intersecting);
+    console.log('inter FUNCIONANDO', intersecting);
+    let bufferGraphic = new Graphic({
+      geometry: buffer,
+      symbol: {
+        // type: "simple-fill",
+        color: [227, 139, 79, 0.5],
+        // outline: {
+        //   color: [255, 255, 255, 255],
+        // },
+      },
+    });
+    //graphicsLayer.add(bufferGraphic);
 
-    //EL PROBLEMA ES QUE LA CAPA TIENE LAS ENTIDADES EN COORDENADAS X E Y Y LAS QUEREMOS EN LAT LON
+    // return intersecting ? true : false;
+    return [intersecting ? true : false, point];
+  }
 
-    // const insularLimit = new FeatureLayer({
-    //   url: 'https://services.arcgis.com/hkQNLKNeDVYBjvFE/arcgis/rest/services/Limite_insular/FeatureServer/0',
-    //   spatialReference: point.spatialReference,
-    // });
-    // const queryLocal = insularLimit.createQuery();
-    // insularLimit.queryFeatures(queryLocal).then((response) => {
-    //   response.features[0].geometry.spatialReference = point.spatialReference;
-    //   console.log(
-    //     'GEOMETRY FROM LAYER LIMIT ISLAND',
-    //     response.features[0].geometry
-    //   );
-    //   this.featureInsularLimit = response.features[0].geometry;
-    //   const tazacortePoint_ = new Point({
-    //     x: -17.9189,
-    //     y: 28.6559,
-    //     spatialReference: this.view.spatialReference,
-    //   });
-    //   console.log('CAPA EN JSON', this.featureInsularLimit.toJSON());
-    //   let intersecting = geometryEngine.intersect(
-    //     point,
-    //     this.featureInsularLimit
-    //   );
-    //   console.log('intersecting POINT LOS LLANOS', intersecting);
-    // });
+  calculateDistances(userPoint: Point) {
+    const geometrySrv = geometryService;
+    const url = Globals.GEOMETRYSERVERURL;
+    const newShopping = this.shops.map((shop) => {
+      const myPromise = new Promise((resolve, reject) => {
+        const testPointUserInTazacorte: Point = new Point({
+          latitude: 28.65194343028121,
+          longitude: -17.94569064538474,
+        });
+
+        //const testPointUserInTazacorte: Point = new Point(userLatLon);
+
+        const markerSymbolUserUbication = {
+          type: 'simple-marker',
+          size: 20,
+          color: [226, 119, 40],
+          outline: {
+            color: [255, 255, 255],
+            width: 2,
+          },
+        };
+
+        if (!this.ubicationUserLayer) {
+          const graphicUbication = new Graphic({
+            geometry: userPoint,
+            symbol: markerSymbolUserUbication,
+          });
+          //THE BEST OPTION IS CREATE A GRAPHIC TO PRINT THE USER LOCATION
+          const fields = [];
+          this.ubicationUserLayer = new FeatureLayer({
+            fields,
+            objectIdField: Globals.OBJECTID,
+            geometryType: 'point',
+            spatialReference: this.view.spatialReference, //{ wkid: 4326 },
+            source: [graphicUbication],
+            //popupTemplate: pTemplate,
+            //renderer: uvRenderer
+          });
+          //this.myMap.add(this.ubicationUserLayer);
+        }
+        const distParams = new DistanceParameters();
+        //distParams.geometry1 = locationUserPoint;
+        distParams.geometry1 = userPoint;
+        distParams.distanceUnit = 'kilometers';
+        distParams.geodesic = true;
+        let shopUbication = new Point({
+          latitude: shop.geometry.latitude,
+          longitude: shop.geometry.longitude,
+        });
+        distParams.geometry2 = shopUbication;
+        resolve(geometrySrv.distance(url, distParams));
+        // }, 1000);
+      });
+      myPromise.then((value: number) => {
+        shop.attributes[Globals.DISTANCE] = value.toFixed(2);
+      });
+      return shop;
+    });
+    setTimeout(() => {
+      this.MapSidebarService.sendDataFromMap(newShopping);
+    }, 2000);
+  }
+
+  onAceptarModal(data: any) {
+    const self = this;
+    const draw = new Draw({
+      view: this.view,
+    });
+    const action2 = draw.create('point', { mode: 'click' });
+    const pointDrawn = new Promise((resolve, reject) => {
+      action2.on('draw-complete', function (evt) {
+        const point = new Point({
+          x: evt.vertices[0][0],
+          y: evt.vertices[0][1],
+        });
+        const lngLat = webMercatorUtils.xyToLngLat(point.x, point.y);
+        const pointInDecimalDegrees = new Point({
+          x: lngLat[0],
+          y: lngLat[1],
+        });
+        // const marker = new Graphic({
+        //   geometry: point,
+        //   symbol: new SimpleMarkerSymbol({
+        //     color: [255, 0, 0],
+        //     size: '26px',
+        //     outline: {
+        //       color: [0, 128, 0],
+        //       width: 1,
+        //     },
+        //   }),
+        // });
+        resolve(self.calculateIntersect(pointInDecimalDegrees));
+      });
+    });
+
+    pointDrawn.then((intersecting) => {
+      if (intersecting[0]) {
+        this.calculateDistances(intersecting[1]);
+      } else {
+        this.openModal();
+      }
+    });
+  }
+
+  openModal(): void {
+    const dialogRef = this.dialog.open(GenericModalComponent, {
+      width: '250px',
+      data: {},
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.onAceptarModal(result);
+      }
+    });
   }
 
   zoomToFeature(): void {
