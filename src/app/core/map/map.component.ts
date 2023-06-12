@@ -32,7 +32,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Draw from '@arcgis/core/views/draw/Draw';
 import { GenericModalComponent } from '../modals/generic-modal/generic-modal.component';
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils.js';
-
+import TileLayer from '@arcgis/core/layers/TileLayer.js';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer.js';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -86,11 +87,21 @@ export class MapComponent implements OnInit, OnDestroy {
     this.actualLayer = new FeatureLayer({
       url: Globals.SHOPLAYER,
     });
+    const tileLayer = new TileLayer({
+      url: 'https://tiles.arcgis.com/tiles/4RxTGB2fxcbFrzj3/arcgis/rest/services/PATRIC_1_TIF/MapServer',
+      title: 'PATRIC_1_TIF',
+    });
+
+    const vectorTileLayer = new VectorTileLayer({
+      url: 'https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer',
+    });
 
     this.myMap = new Map({
       basemap: Globals.BASEMAPSTREETSVECTOR,
-      layers: [this.actualLayer],
+      layers: [this.actualLayer, tileLayer],
     });
+
+    // this.myMap.add(tileLayer);
 
     this.graphicLayer = new GraphicsLayer({
       listMode: 'hide',
@@ -393,6 +404,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calculateDistances(userPoint: Point) {
+    this.MapSidebarService.startIsLoadingLogo(true);
     const geometrySrv = geometryService;
     const url = Globals.GEOMETRYSERVERURL;
     const newShopping = this.shops.map((shop) => {
@@ -452,6 +464,7 @@ export class MapComponent implements OnInit, OnDestroy {
     });
     setTimeout(() => {
       this.MapSidebarService.sendDataFromMap(newShopping);
+      this.MapSidebarService.startIsLoadingLogo(false);
     }, 2000);
   }
 
