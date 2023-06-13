@@ -50,7 +50,7 @@ export class MapComponent implements OnInit, OnDestroy {
   public centroidePoint: Point;
   public featureInsularLimit: any;
   public draw: any;
-
+  public userLocationOK: any;
   @ViewChild(Globals.MAPVIEWNODE, { static: true })
   private mapViewEl: ElementRef;
   graphicLayer;
@@ -324,13 +324,17 @@ export class MapComponent implements OnInit, OnDestroy {
         sessionStorage.getItem(Globals.USERUBICATION)
       );
       console.log('userLatLon', userLatLon);
-      if (userLatLon) {
+      if (userLatLon || this.userLocationOK) {
+        const userLocation: Point = new Point({
+          latitude: userLatLon.latitude,
+          longitude: userLatLon.longitude,
+        });
         const testPointUserInFuerteventuraToBuffer: Point = new Point({
           latitude: 28.3587,
           longitude: -14.0534,
         });
-        if (this.calculateIntersect(testPointUserInFuerteventuraToBuffer)[0]) {
-          this.calculateDistances(testPointUserInFuerteventuraToBuffer);
+        if (this.calculateIntersect(userLocation)[0]) {
+          this.calculateDistances(userLocation);
         } else {
           this.MapSidebarService.startIsLoadingLogo(false);
           this.openModal();
@@ -342,6 +346,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calculateIntersect(point: Point): any {
+    const userLocation = this.userLocationOK || point;
     const centroidePoint = new Point({
       x: -17.8673,
       y: 28.7158,
@@ -362,10 +367,8 @@ export class MapComponent implements OnInit, OnDestroy {
       symbol: markerSymbol,
     });
 
-    //PRINT POINT ON MAP
-    console.log('point', point.toJSON());
     const marker = new Graphic({
-      geometry: point,
+      geometry: userLocation,
       symbol: new SimpleMarkerSymbol({
         color: [255, 0, 0],
         size: '26px',
@@ -385,7 +388,7 @@ export class MapComponent implements OnInit, OnDestroy {
       30,
       'kilometers'
     );
-    const intersecting = geometryEngine.intersect(point, buffer);
+    const intersecting = geometryEngine.intersect(userLocation, buffer);
     console.log('inter FUNCIONANDO', intersecting);
     let bufferGraphic = new Graphic({
       geometry: buffer,
@@ -398,12 +401,15 @@ export class MapComponent implements OnInit, OnDestroy {
       },
     });
     //graphicsLayer.add(bufferGraphic);
-
+    if (intersecting) {
+      this.userLocationOK = userLocation;
+    }
     // return intersecting ? true : false;
-    return [intersecting ? true : false, point];
+    return [intersecting ? true : false, userLocation];
   }
 
   calculateDistances(userPoint: Point) {
+    const userLocation = this.userLocationOK || userPoint;
     this.MapSidebarService.startIsLoadingLogo(true);
     const geometrySrv = geometryService;
     const url = Globals.GEOMETRYSERVERURL;
@@ -428,7 +434,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (!this.ubicationUserLayer) {
           const graphicUbication = new Graphic({
-            geometry: userPoint,
+            geometry: userLocation,
             symbol: markerSymbolUserUbication,
           });
           //THE BEST OPTION IS CREATE A GRAPHIC TO PRINT THE USER LOCATION
@@ -446,7 +452,7 @@ export class MapComponent implements OnInit, OnDestroy {
         }
         const distParams = new DistanceParameters();
         //distParams.geometry1 = locationUserPoint;
-        distParams.geometry1 = userPoint;
+        distParams.geometry1 = userLocation;
         distParams.distanceUnit = 'kilometers';
         distParams.geodesic = true;
         let shopUbication = new Point({
