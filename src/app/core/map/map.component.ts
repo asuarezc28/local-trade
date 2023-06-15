@@ -51,6 +51,7 @@ export class MapComponent implements OnInit, OnDestroy {
   public featureInsularLimit: any;
   public draw: any;
   public userLocationOK: any;
+  public editPoint: boolean = false;
   @ViewChild(Globals.MAPVIEWNODE, { static: true })
   private mapViewEl: ElementRef;
   graphicLayer;
@@ -87,18 +88,10 @@ export class MapComponent implements OnInit, OnDestroy {
     this.actualLayer = new FeatureLayer({
       url: Globals.SHOPLAYER,
     });
-    const tileLayer = new TileLayer({
-      url: 'https://tiles.arcgis.com/tiles/4RxTGB2fxcbFrzj3/arcgis/rest/services/PATRIC_1_TIF/MapServer',
-      title: 'PATRIC_1_TIF',
-    });
-
-    const vectorTileLayer = new VectorTileLayer({
-      url: 'https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer',
-    });
 
     this.myMap = new Map({
       basemap: Globals.BASEMAPSTREETSVECTOR,
-      layers: [this.actualLayer, tileLayer],
+      layers: [this.actualLayer],
     });
 
     // this.myMap.add(tileLayer);
@@ -346,6 +339,8 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calculateIntersect(point: Point): any {
+    console.log('point', point);
+    console.log('USERLOCATIONok', this.userLocationOK);
     const userLocation = this.userLocationOK || point;
     const centroidePoint = new Point({
       x: -17.8673,
@@ -474,6 +469,11 @@ export class MapComponent implements OnInit, OnDestroy {
     }, 2000);
   }
 
+  editPointFunc(): void {
+    this.userLocationOK = null;
+    this.onAceptarModal('');
+  }
+
   onAceptarModal(data: any) {
     const self = this;
     const draw = new Draw({
@@ -509,6 +509,7 @@ export class MapComponent implements OnInit, OnDestroy {
     pointDrawn.then((intersecting) => {
       if (intersecting[0]) {
         this.calculateDistances(intersecting[1]);
+        this.editPoint = true;
       } else {
         this.openModal();
       }
