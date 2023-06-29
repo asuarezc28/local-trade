@@ -1,30 +1,34 @@
-::ng-deep .map-container{
-    width: 70% !important;
+::ng-deep .map-container {
+    width: 100% !important;
     height: 100%;
     margin-top: 10px;
 }
 
-.googleMap{
+::ng-deep .adp-directions {
+    width: 100% !important;
+}
+
+.googleMap {
     display: flex;
     flex-direction: row;
 }
 
-#indicators{
+#indicators {
     overflow-y: scroll;
-    max-height: 500px;
+    max-height: 30%;
 }
 
-.tavelModeSwitch{
+.tavelModeSwitch {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
 }
 
-.drivingOption{
+.drivingOption {
     margin-right: 10px;
 }
 
-.bicyclingOption{
+.bicyclingOption {
     margin-right: 10px;
 }
