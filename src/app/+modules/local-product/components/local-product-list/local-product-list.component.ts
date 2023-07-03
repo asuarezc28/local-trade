@@ -12,6 +12,7 @@ import { Search } from '../../models/search';
 import * as Globals from '../../../../shared/global';
 import { SidebarMenuService } from 'src/app/services/sidebar-menu-service/sidebar-menu.service';
 import { HostListener } from '@angular/core';
+import { LocationService } from 'src/app/services/location-service/location.service';
 
 @Component({
   selector: 'app-local-product',
@@ -65,7 +66,8 @@ export class LocalProductListComponent implements OnInit {
     private toDetailService: ToDetailPageService,
     private paginatorInfoToSearchService: PaginatorInfoToSearchService,
     private dialog: MatDialog,
-    private SidebarService: SidebarMenuService
+    private SidebarService: SidebarMenuService,
+    private locationService: LocationService
   ) {
     this.localForm = new FormGroup({
       shopping: new FormControl(Globals.EMPY),
@@ -309,7 +311,12 @@ export class LocalProductListComponent implements OnInit {
       sessionStorage.getItem(Globals.USERUBICATION)
     );
     if (userLatLon) {
-      this.openMapDialog(userLatLon, item);
+      this.locationService.setLocation(userLatLon);
+      this.locationService.getIntersectObservable().subscribe((intersect) => {
+        if (intersect[0]) {
+          this.openMapDialog(userLatLon, item);
+        }
+      });
     } else {
       alert('You need allow the coordinates position');
     }
@@ -337,6 +344,37 @@ export class LocalProductListComponent implements OnInit {
       panelClass: 'full-screen-modal',
     });
   }
+
+  //calculateIntersect(point: Point): any {
+  //const userLocation = this.userLocationOK || point;
+  //const centroidePoint = new Point({
+  //x: -17.8673,
+  //y: 28.7158,
+  //});
+  //const markerSymbol = {
+  //type: 'simple-marker',
+  //size: 20,
+  //color: [34, 139, 34],
+  //outline: {
+  //color: [255, 255, 255],
+  //width: 2,
+  //},
+  //};
+  //const pointGraphic = new Graphic({
+  //geometry: centroidePoint,
+  //symbol: markerSymbol,
+  //});
+  //const buffer: any = geometryEngine.geodesicBuffer(
+  //pointGraphic.geometry,
+  //30,
+  //'kilometers'
+  //);
+  //const intersecting = geometryEngine.intersect(userLocation, buffer);
+  //if (intersecting) {
+  //this.userLocationOK = userLocation;
+  //}
+  //return [intersecting ? true : false, userLocation];
+  //}
 
   ngAfterViewInit(): void {
     const page = localStorage.getItem(Globals.PAGE);

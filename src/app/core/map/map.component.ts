@@ -34,6 +34,7 @@ import { GenericModalComponent } from '../modals/generic-modal/generic-modal.com
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils.js';
 import TileLayer from '@arcgis/core/layers/TileLayer.js';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer.js';
+import { LocationService } from 'src/app/services/location-service/location.service';
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -58,12 +59,14 @@ export class MapComponent implements OnInit, OnDestroy {
   myMap: Map;
   formDetailPage: boolean;
   actualURL: string;
+  isGoogleMap: boolean;
 
   constructor(
     private zone: NgZone,
     private MapSidebarService: MapSidebarService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private locationService: LocationService
   ) {
     this.MapSidebarService.formDetailPage$.subscribe((response) => {
       this.formDetailPage = response;
@@ -221,6 +224,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.filterLocalProductByCategorieOrTerm();
     this.orderByLocation();
     this.zoomToFeature();
+    this.obtainLocationFromLocalProductComponent();
   }
 
   initDataMap(): void {
@@ -313,6 +317,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   orderByLocation(): void {
     this.MapSidebarService.orderByLocationChanges$.subscribe(async (data) => {
+      this.isGoogleMap = false;
       const userLatLon = JSON.parse(
         sessionStorage.getItem(Globals.USERUBICATION)
       );
@@ -508,7 +513,13 @@ export class MapComponent implements OnInit, OnDestroy {
 
     pointDrawn.then((intersecting) => {
       if (intersecting[0]) {
-        this.calculateDistances(intersecting[1]);
+        //if google maps????? local variable
+        console.log('IS GOOGLE MAP', this.isGoogleMap);
+        if (this.isGoogleMap) {
+          this.locationService.getIntersect([true]);
+        } else {
+          this.calculateDistances(intersecting[1]);
+        }
         this.editPoint = true;
       } else {
         this.openModal();
@@ -524,6 +535,26 @@ export class MapComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.onAceptarModal(result);
+      }
+    });
+  }
+
+  obtainLocationFromLocalProductComponent() {
+    this.locationService.getLocationObservable().subscribe((location) => {
+      if (location) {
+        alert('calculate inter');
+        this.isGoogleMap = true;
+        console.log(location);
+        const userLocation: Point = new Point({
+          latitude: location.latitude,
+          longitude: location.longitude,
+        });
+        this.locationService.getIntersect(
+          this.calculateIntersect(userLocation)
+        );
+        if (!this.calculateIntersect(userLocation)[0]) {
+          this.openModal();
+        }
       }
     });
   }
