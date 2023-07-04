@@ -513,10 +513,8 @@ export class MapComponent implements OnInit, OnDestroy {
 
     pointDrawn.then((intersecting) => {
       if (intersecting[0]) {
-        //if google maps????? local variable
-        console.log('IS GOOGLE MAP', this.isGoogleMap);
         if (this.isGoogleMap) {
-          this.locationService.getIntersect([true]);
+          this.locationService.getIntersect(intersecting);
         } else {
           this.calculateDistances(intersecting[1]);
         }
@@ -542,9 +540,7 @@ export class MapComponent implements OnInit, OnDestroy {
   obtainLocationFromLocalProductComponent() {
     this.locationService.getLocationObservable().subscribe((location) => {
       if (location) {
-        alert('calculate inter');
         this.isGoogleMap = true;
-        console.log(location);
         const userLocation: Point = new Point({
           latitude: location.latitude,
           longitude: location.longitude,

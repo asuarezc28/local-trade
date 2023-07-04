@@ -48,7 +48,8 @@ export class LocalProductListComponent implements OnInit {
   coordinatesLocation: any;
   originalData: any;
   isLoading: boolean = false;
-
+  canOpenGoogleMapModal: boolean = false;
+  currentLocation: any = null;
   public orderAlphaOption = {
     label: 'Alpha',
     value: Globals.ALPHA,
@@ -120,6 +121,7 @@ export class LocalProductListComponent implements OnInit {
     this.mapSidebarService.isLoadingLogo$.subscribe((data) => {
       this.isLoading = data;
     });
+    this.checkCanOpenGoogleMapModal();
   }
 
   getDataShops(): void {
@@ -312,14 +314,23 @@ export class LocalProductListComponent implements OnInit {
     );
     if (userLatLon) {
       this.locationService.setLocation(userLatLon);
-      this.locationService.getIntersectObservable().subscribe((intersect) => {
-        if (intersect[0]) {
-          this.openMapDialog(userLatLon, item);
-        }
-      });
+      if (this.canOpenGoogleMapModal) {
+        this.openMapDialog(this.currentLocation || userLatLon, item);
+      }
     } else {
       alert('You need allow the coordinates position');
     }
+  }
+
+  checkCanOpenGoogleMapModal(): void {
+    this.locationService.getIntersectObservable().subscribe((intersect) => {
+      if (intersect[0]) {
+        this.canOpenGoogleMapModal = true;
+      } else {
+        this.canOpenGoogleMapModal = false;
+      }
+      this.currentLocation = intersect[1];
+    });
   }
 
   openMapDialog(coordinates: any, item: any): void {

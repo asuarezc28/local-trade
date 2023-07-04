@@ -70,8 +70,11 @@ export class GoogleMapDialogComponent implements OnInit {
     console.log('dataKeyy', this.data.dataKey);
     this.directionsService.route(
       {
-        //origin: { lat: this.data.dataKey.latitude, lng: this.data.dataKey.longitude },
-        origin: { lat: 28.637702659757593, lng: -17.895406657412668 },
+        origin: {
+          lat: this.data.dataKey.latitude,
+          lng: this.data.dataKey.longitude,
+        },
+        //origin: { lat: 28.637702659757593, lng: -17.895406657412668 },
         destination: {
           lat: this.data.shop.latitude,
           lng: this.data.shop.longitude,
