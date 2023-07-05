@@ -60,7 +60,7 @@ export class MapComponent implements OnInit, OnDestroy {
   formDetailPage: boolean;
   actualURL: string;
   isGoogleMap: boolean;
-
+  isLocationSearchActive: boolean = false;
   constructor(
     private zone: NgZone,
     private MapSidebarService: MapSidebarService,
@@ -93,7 +93,7 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     this.myMap = new Map({
-      basemap: Globals.BASEMAPSTREETSVECTOR,
+      basemap: 'satellite',
       layers: [this.actualLayer],
     });
 
@@ -108,7 +108,7 @@ export class MapComponent implements OnInit, OnDestroy {
     const view = new MapView({
       container,
       map: this.myMap,
-      zoom: 10,
+      zoom: 11,
       center: [-17.93, 28.66],
     });
 
@@ -344,8 +344,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calculateIntersect(point: Point): any {
-    console.log('point', point);
-    console.log('USERLOCATIONok', this.userLocationOK);
     const userLocation = this.userLocationOK || point;
     const centroidePoint = new Point({
       x: -17.8673,
@@ -409,6 +407,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   calculateDistances(userPoint: Point) {
+    this.isLocationSearchActive = true;
     const userLocation = this.userLocationOK || userPoint;
     this.MapSidebarService.startIsLoadingLogo(true);
     const geometrySrv = geometryService;
@@ -515,7 +514,8 @@ export class MapComponent implements OnInit, OnDestroy {
       if (intersecting[0]) {
         if (this.isGoogleMap) {
           this.locationService.getIntersect(intersecting);
-        } else {
+        }
+        if (this.isLocationSearchActive) {
           this.calculateDistances(intersecting[1]);
         }
         this.editPoint = true;
