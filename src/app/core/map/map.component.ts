@@ -621,3 +621,34 @@ export class MapComponent implements OnInit, OnDestroy {
 //console.log('intersecting POINT LOS LLANOS', intersecting);
 //});
 //DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+
+//async calculateIntersect(point: Point): Promise<any> {
+//const insularLimit = new FeatureLayer({
+//url: 'https://services9.arcgis.com/4RxTGB2fxcbFrzj3/ArcGIS/rest/services/islas_20170101_generalizada/FeatureServer/0',
+//});
+//this.myMap.add(insularLimit);
+//const queryLocal = insularLimit.createQuery();
+
+//try {
+//const response = await insularLimit.queryFeatures(queryLocal);
+//this.featureInsularLimit = response.features[0].geometry;
+
+//const res: any = await new Promise((resolve, reject) => {
+//insularLimit.queryFeatures(queryLocal).then((response) => {
+//resolve(response.features[0].geometry);
+//});
+//});
+
+//const userLocation = this.userLocationOK || point;
+//const intersecting = geometryEngine.intersect(res, userLocation);
+
+//if (intersecting) {
+//this.userLocationOK = userLocation;
+//}
+
+//return [intersecting ? true : false, userLocation];
+//} catch (error) {
+//console.error('Error:', error);
+//return [false, null];
+//}
+//}
